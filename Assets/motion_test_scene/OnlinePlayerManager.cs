@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
-using SimpleJSON;
 using System.Collections.Generic;
 
 public class OnlinePlayerManager : MonoBehaviour
@@ -30,9 +29,9 @@ public class OnlinePlayerManager : MonoBehaviour
 				player._id = 1;
 				player._name = "luke";
 
-				SPVector3 pos_vector = new SPVector3 (0,0,0);
-				SPVector3 vel_vector = new SPVector3 (0,0,0);
-				SPVector3 rot_vector = new SPVector3 (0,0,0);
+				Vector3 pos_vector = new Vector3 (0,0,0);
+				Vector3 vel_vector = new Vector3 (0,0,0);
+				Vector3 rot_vector = new Vector3 (0,0,0);
 
 				player._pos = pos_vector;
 				player._vel = vel_vector;
@@ -47,7 +46,7 @@ public class OnlinePlayerManager : MonoBehaviour
 				global_msg._bullets = bullets;
 
 		}
-	
+
 
 		void Update ()
 		{
@@ -59,7 +58,7 @@ public class OnlinePlayerManager : MonoBehaviour
 		void update_message(){
 				List<SPPlayerObject> players = global_msg._players;
 				var player = players [0];
-				SPVector3 vel_vector = new SPVector3 (0.05f,0f,0f);
+				Vector3 vel_vector = new Vector3 (0.05f,0f,0f);
 				player._vel = vel_vector;
 		}
 
@@ -105,15 +104,34 @@ public class OnlinePlayerManager : MonoBehaviour
 				foreach (Bullet b in bullet_table.Values) {
 						if (b.get_bullet_object () == null) {
 								//GameObject new_player_object = (GameObject)Instantiate (Resources.Load ("SimulatedBullet"));
+						}else{
+
+								if(b.is_out_of_bounds() || collision((Player)player_table[player_id], b)){ 
+										destroy_bullet(b);
+								}
 						}
 				}
+		}
+
+		bool collision(Player p, Bullet b){
+				var player_pos = p._pos;
+				var bullet_pos = b._bul_pos;
+				if (Util.vec_dist (player_pos, bullet_pos) < 1.5f) {
+						return true;
+				}
+				return false;
 		}
 
 
 		void destroy_player(Player player) {
 				GameObject.Destroy (player.get_player_object ());
 				player.set_player_object (null);
+		}
 
+		void destroy_bullet (Bullet bullet){
+
+				GameObject.Destroy (bullet.get_bullet_object ());
+				bullet.set_bullet_object (null);
 		}
 
 		void update_player (int id, SPPlayerObject msg) {
@@ -135,10 +153,12 @@ public class OnlinePlayerManager : MonoBehaviour
 				GameObject _player_object;
 				int _id;
 				string _name;
-				SPVector3 _pos;
-				SPVector3 _vel;
-				SPVector3 _rotation;
-				int _alive;
+				public Vector3 _pos { get; set; }
+				public Vector3 _vel { get; set; }
+				public Vector3 _rotation { get; set; }
+				int _alive { get; set; }
+				private int timer_count;
+				private int time_to_respawn;
 
 				public Player(SPPlayerObject player_message) {
 						this._id = player_message._id;
@@ -146,13 +166,15 @@ public class OnlinePlayerManager : MonoBehaviour
 						this._pos = player_message._pos;
 						this._vel = player_message._vel;
 						this._rotation = player_message._rot;
-						this._alive = player_message._alive;						                                   
+						this._alive = player_message._alive;
+						this.timer_count = 0;		
+						this.time_to_respawn = 5;				                                   
 				}
 
 				public int get_id() {
 						return this._id;
 				}
-	
+
 				public GameObject get_player_object() {
 						return _player_object;
 				}
@@ -161,41 +183,34 @@ public class OnlinePlayerManager : MonoBehaviour
 						this._player_object = player_object;
 				}
 
-				public void set_pos(SPVector3 pos) {
-						this._pos = pos;
-				}
-
-				public void set_vel(SPVector3 vel) {
-						this._vel = vel;
-				}
-
-				public void set_rot(SPVector3 rot) {
-						this._rotation = rot;
-				}
-
-				public void set_alive(int alive){
-						this._alive = alive;
-				}
-
 				public void update() {
 						MotionSimulatedPlayer player_component = _player_object.GetComponent<MotionSimulatedPlayer> ();
 
-						player_component._pos.x = _pos._x;
-						player_component._pos.y = _pos._y;
-						player_component._pos.z = _pos._z;
+						player_component._pos.x = _pos.x;
+						player_component._pos.y = _pos.y;
+						player_component._pos.z = _pos.z;
 
-						player_component._vel.x = _vel._x;
-						player_component._vel.y = _vel._y;
-						player_component._vel.z = _vel._z;
+						player_component._vel.x = _vel.x;
+						player_component._vel.y = _vel.y;
+						player_component._vel.z = _vel.z;
 
-						player_component._rotation.x = _rotation._x;
-						player_component._rotation.y = _rotation._y;
-						player_component._rotation.z = _rotation._z;
+						player_component._rotation.x = _rotation.x;
+						player_component._rotation.y = _rotation.y;
+						player_component._rotation.z = _rotation.z;
 				}
 
 				public void respawn(){
 						if (_alive == 0) {
-
+								timer_count++;
+								if (timer_count % 50 == 0) { // A second has passed
+										this.time_to_respawn--;
+										if (this.time_to_respawn == 0) {
+												this._alive = 1;
+												this._pos = new Vector3 (0.0, 0.0, 0.0);
+												this.timer_count = 0;		
+												this.time_to_respawn = 5;		
+										}
+								}
 						}
 				}
 		}
@@ -204,9 +219,9 @@ public class OnlinePlayerManager : MonoBehaviour
 				GameObject _bullet_object;
 				int _bul_id;
 				int _player_id;
-				SPVector3 _bul_pos;
-				SPVector3 _bul_vel;
-				SPVector3 _bul_rotation;
+				public Vector3 _bul_pos{ get; set;}
+				public Vector3 _bul_vel{ get; set;}
+				public Vector3 _bul_rotation{ get; set;}
 
 				public Bullet(SPBulletObject bullet_message) {
 						this._bul_id = bullet_message._id;
@@ -216,24 +231,28 @@ public class OnlinePlayerManager : MonoBehaviour
 						this._bul_rotation = bullet_message._rot;
 				}
 
+				public bool is_out_of_bounds(){
+						float x = _bul_pos.x;
+						float y = _bul_pos.y;
+						float z = _bul_pos.z;
+						float oob = 10000f;
+
+						if((x > oob || x < -oob) || (y > oob || y < -oob) || (z > oob || z < -oob)){
+								return true;
+						}
+						return false;
+				}
+
+				public Vector3 get_bullet_pos(){
+						return _bul_pos;
+				}
+
 				public GameObject get_bullet_object(){
 						return _bullet_object;
 				}
 
 				public void set_bullet_object(GameObject bullet_object){
 						this._bullet_object = bullet_object;
-				}
-
-				public void set_bul_pos(SPVector3 pos) {
-						this._bul_pos = pos;
-				}
-
-				public void set_bul_vel(SPVector3 vel) {
-						this._bul_vel = vel;
-				}
-
-				public void set_bul_rot(SPVector3 rot) {
-						this._bul_rotation = rot;
 				}
 		}
 }
