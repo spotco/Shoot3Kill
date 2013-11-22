@@ -12,6 +12,7 @@ public class DataPhase {
 	public Socket _socket;
 	public int _len;
 	public DataPhase(Socket s, int len) { _socket = s; _len = len; }
+	public byte[] _msg;
 }
 
 public class ListenSocket {
@@ -49,15 +50,25 @@ public class ListenSocket {
 	}
 
 	private void update(object source, ElapsedEventArgs e) {
-		handle_out();
 		handle_in();
+		broadcast_out();
+	}
+
+	private void broadcast_out() {
+		ArrayList all_sockets = new ArrayList(_header_phase);
+		foreach(DataPhase dp in _data_phase) all_sockets.Add(dp._socket);
+		Socket.Select(null,all_sockets,null,1000);
+		foreach(Socket s in all_sockets) {
+			byte[] msg = serialize_object("server_out");
+			byte[] len_header = int_to_bytea4(msg.Length);
+			s.Send(len_header);
+			s.Send(msg);
+
+
+		}
 	}
 
 	private void handle_in() {
-
-	}
-
-	private void handle_out() {
 		ArrayList listenList = new ArrayList();
 		listenList.Add(_connection_socket);
 		Socket.Select(listenList, null, null, 1000);
