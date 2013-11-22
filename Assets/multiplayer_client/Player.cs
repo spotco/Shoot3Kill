@@ -34,11 +34,14 @@ public class Player {
 	}
 
 	public void Update() {
-				Vector3 pos = _player_object.transform.position;
-				pos.x += _vel._x;
-				pos.y += _vel._y;
-				pos.z += _vel._z;
-				_player_object.transform.position = pos;
+		Vector3 pos = new Vector3(_pos._x,_pos._y,_pos._z);
+		pos.x += _vel._x;
+		pos.y += _vel._y;
+		pos.z += _vel._z;
+		_player_object.transform.position = pos;
+		_pos = new SPVector(pos.x,pos.y,pos.z);
+		
+		Debug.Log(pos);
 	}
 
 	public void respawn(){

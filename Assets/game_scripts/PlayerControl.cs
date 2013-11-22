@@ -15,15 +15,30 @@ public class PlayerControl : MonoBehaviour {
 	public int _jump_cooldown;
 	public int _move_cooldown;
 	public Vector3 _ground_normal;
+	
+	public Transform _camera_transform;
 
 
 	void Start () {
 		_body = gameObject.GetComponent<Rigidbody>();
 		_body.freezeRotation = true;
 		instance = this;
+		
+		_bullet_cooldown = 0;
+		
+		_camera_transform = Util.FindInHierarchy(gameObject,"Main Camera").transform;
 	}
-
+	
+	int _bullet_cooldown = 0;
 	void Update () {
+		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
+		
+		if (Input.GetMouseButton(0) && _bullet_cooldown <= 0) {
+			BulletManager.instance.add_bullet(_camera_transform.position,_camera_transform.forward);
+			
+		}
+		
+		
 		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;
@@ -80,7 +95,6 @@ public class PlayerControl : MonoBehaviour {
 		}
 
 		if (Math.Abs(neu_vel.x) < 0.2f) neu_vel.x = 0;
-		//if (Math.Abs(neu_vel.y) < 0.2f) neu_vel.y = 0;
 		if (Math.Abs(neu_vel.z) < 0.2f) neu_vel.z = 0;
 		_body.velocity = neu_vel;
 
