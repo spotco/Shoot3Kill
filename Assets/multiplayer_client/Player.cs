@@ -14,7 +14,7 @@ public class Player {
 	private int time_to_respawn;
 
 	public Player(SPPlayerObject player_message) {
-		this.instance = this;
+		instance = this;
 		this._id = player_message._id;
 		this._name = player_message._name;
 		this._pos = player_message._pos;
@@ -60,7 +60,7 @@ public class Player {
 				this.time_to_respawn--;
 				if (this.time_to_respawn == 0) {
 					this._alive = 1;
-					this._pos = new Vector3 (0.0, 0.0, 0.0);
+					this._pos = new Vector3 (0.0f, 0.0f, 0.0f);
 					this.timer_count = 0;		
 					this.time_to_respawn = 5;		
 				}

@@ -3,6 +3,7 @@ using System.Collections;
 
 public class player_info : MonoBehaviour {
 	public static player_info instance;
+	public string _score;
 
 	public string _name = "";
 
