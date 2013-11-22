@@ -150,17 +150,20 @@ public class OnlinePlayerManager : MonoBehaviour
 		}
 
 		public class Player {
+				public static Player instance;
+
 				GameObject _player_object;
 				int _id;
 				string _name;
 				public Vector3 _pos { get; set; }
 				public Vector3 _vel { get; set; }
 				public Vector3 _rotation { get; set; }
-				int _alive { get; set; }
+				public int _alive { get; set; }
 				private int timer_count;
 				private int time_to_respawn;
 
 				public Player(SPPlayerObject player_message) {
+						this.instance = this;
 						this._id = player_message._id;
 						this._name = player_message._name;
 						this._pos = player_message._pos;
