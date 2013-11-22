@@ -45,15 +45,15 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\SimpleParticlePack\Scripts\ParticleTester.cs" />
+     <Compile Include="Assets\game_scripts\JSON.cs" />
      <Compile Include="Assets\game_scripts\PlayerControl.cs" />
      <Compile Include="Assets\game_scripts\Util.cs" />
-     <Compile Include="Assets\game_scripts\libs\JSONObject.cs" />
      <Compile Include="Assets\game_scripts\player_info.cs" />
      <Compile Include="Assets\multiplayer_client\Bullet.cs" />
      <Compile Include="Assets\multiplayer_client\MotionSimulatedPlayer.cs" />
      <Compile Include="Assets\multiplayer_client\OnlinePlayerManager.cs" />
      <Compile Include="Assets\multiplayer_client\Player.cs" />
-     <Compile Include="Assets\networking\Client.cs" />
+     <Compile Include="Assets\networking\OnlineClient.cs" />
      <Compile Include="Assets\networking\server\ListenSocket.cs" />
      <Compile Include="Assets\networking\server\SPBulletObject.cs" />
      <Compile Include="Assets\networking\server\SPMessage.cs" />

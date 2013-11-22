@@ -22,13 +22,15 @@ public class OnlinePlayerManager : MonoBehaviour
 		}
 
 		void create_message() {
+		/*
 				global_msg = new SPMessage ();
 				List<SPPlayerObject> players = new List<SPPlayerObject> ();
 				SPPlayerObject player = new SPPlayerObject ();
 				player._alive = 1;
 				player._id = 1;
 				player._name = "luke";
-
+	
+				
 				Vector3 pos_vector = new Vector3 (0,0,0);
 				Vector3 vel_vector = new Vector3 (0,0,0);
 				Vector3 rot_vector = new Vector3 (0,0,0);
@@ -44,7 +46,7 @@ public class OnlinePlayerManager : MonoBehaviour
 				List<SPBulletObject> bullets = new List<SPBulletObject> ();
 
 				global_msg._bullets = bullets;
-
+		 */
 		}
 
 
@@ -59,7 +61,7 @@ public class OnlinePlayerManager : MonoBehaviour
 				List<SPPlayerObject> players = global_msg._players;
 				var player = players [0];
 				Vector3 vel_vector = new Vector3 (0.05f,0f,0f);
-				player._vel = vel_vector;
+				//player._vel = vel_vector;
 		}
 
 		void read_message() {
@@ -70,12 +72,14 @@ public class OnlinePlayerManager : MonoBehaviour
 								Player new_player = new Player (player_msg);
 								player_table.Add (id, new_player);
 						} else {
+				/*
 								if (player_msg._alive == 0) {
 										destroy_player ((Player)player_table[id]);
 								} else {
 										update_player (id, player_msg);
-								}
+								}*/
 						}
+						
 				}
 
 				foreach (SPBulletObject bullet_msg in msg._bullets) {
@@ -90,7 +94,7 @@ public class OnlinePlayerManager : MonoBehaviour
 		}
 
 		void update_sprites () {
-				foreach (Player p in player_table.Values) {
+				/*foreach (Player p in player_table.Values) {
 
 						if (p.get_player_object () == null) {
 								GameObject new_player_object = (GameObject)Instantiate (Resources.Load ("SimulatedPlayer"));
@@ -110,7 +114,7 @@ public class OnlinePlayerManager : MonoBehaviour
 										destroy_bullet(b);
 								}
 						}
-				}
+				}*/
 		}
 
 		bool collision(Player p, Bullet b){
@@ -135,18 +139,19 @@ public class OnlinePlayerManager : MonoBehaviour
 		}
 
 		void update_player (int id, SPPlayerObject msg) {
-				Player player_to_update = (Player) player_table [id];
+				/*Player player_to_update = (Player) player_table [id];
 				player_to_update._pos = msg._pos;
 				player_to_update._vel = msg._vel;
-				player_to_update._rotation = msg._rot;
+				player_to_update._rotation = msg._rot;*/
 		}
 
 		void update_bullet (int id, SPBulletObject bullet_msg)
 		{
+		/*
 				Bullet bullet_to_update = (Bullet) bullet_table [id];
 				bullet_to_update._bul_pos = bullet_msg._pos;
 				bullet_to_update._bul_vel = bullet_msg._vel;
-				bullet_to_update._bul_rotation = bullet_msg._rot;
+				bullet_to_update._bul_rotation = bullet_msg._rot;*/
 		}
 
 }

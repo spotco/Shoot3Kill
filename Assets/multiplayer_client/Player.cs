@@ -14,6 +14,7 @@ public class Player {
 	private int time_to_respawn;
 
 	public Player(SPPlayerObject player_message) {
+		/*
 		instance = this;
 		this._id = player_message._id;
 		this._name = player_message._name;
@@ -22,7 +23,7 @@ public class Player {
 		this._rotation = player_message._rot;
 		this._alive = player_message._alive;
 		this.timer_count = 0;		
-		this.time_to_respawn = 5;				                                   
+		this.time_to_respawn = 5;*/				                                   
 	}
 
 	public int get_id() {
