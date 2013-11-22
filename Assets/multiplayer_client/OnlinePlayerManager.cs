@@ -53,27 +53,9 @@ public class OnlinePlayerManager : MonoBehaviour
 
 		void update_sprites () {
 				foreach (Player p in player_table.Values) {
-						if (p._player_object == null) {
-								GameObject new_player_object = (GameObject)Instantiate (Resources.Load ("onlineplayer"));
-								p._player_object = new_player_object;
-						}
+					p.Update();
 				}
 		}
-
-
-		void kill_player(){
-				Player myPlayer = the_player;
-				player_table.Remove (the_player._id);
-				myPlayer._alive = 0;
-				destroy_player (myPlayer);
-				myPlayer.respawn();
-				player_table.Add (the_player._id, myPlayer);
-		}
-
-		void destroy_player(Player player) {
-				GameObject.Destroy (player.get_player_object ());
-				player._player_object = null;
-	}
 
 		void update_player (int id, SPPlayerObject msg) {
 				Player player_to_update = (Player) player_table [id];
