@@ -5,15 +5,12 @@ using System.Collections;
 
 public class big_score : MonoBehaviour {
 	bool show_score = false;
-	Rect window = new Rect(50,50 , Screen.width - 100, Screen.height - 100);
 
 	void OnGUI () {
 
-		// Make a background box
-		if (Event.current.type == EventType.keyDown && Event.current.character == '\t') show_score = true;
-		if (Event.current.type == EventType.keyUp && Event.current.character == '\t') show_score = false;
+
 		if(Input.GetKey(KeyCode.Tab)){
-			window = GUI.Window (2, window, GlobalScoreWindow, "Scoreboard");
+			score_source.scoreboard = GUI.Window (5, score_source.scoreboard, GlobalScoreWindow, "Scores");
 
 		
 		/*// Make the first button. If it is pressed, Application.Loadlevel (1) will be executed
