@@ -4,16 +4,32 @@ using System.Net;
 using System.Text;
 using System.Timers;
 using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class ShootServer {
 
 	static Socket _connection_socket;
 
 	static ArrayList _connections = new ArrayList ();
-	static ArrayList _buffer = new ArrayList ();
 	static ArrayList _byteBuffer = new ArrayList ();
 
 	public static void Main(string[] args) {
+		/*
+		SPPlayerObject obj1 = new SPPlayerObject();
+		obj1._id = 5;
+
+		MemoryStream stream = new MemoryStream();
+		BinaryFormatter formatter = new BinaryFormatter();
+		formatter.Serialize(stream, obj1);
+
+		byte[] data = stream.ToArray();
+
+		SPPlayerObject obj2 = (SPPlayerObject)formatter.Deserialize(new MemoryStream(data));
+		Console.WriteLine(obj2._id);
+		*/
+
+
 		_connection_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);     
 		IPEndPoint ipLocal = new IPEndPoint ( IPAddress.Any , 6996);
 		_connection_socket.Bind( ipLocal );
@@ -33,8 +49,11 @@ public class ShootServer {
 		timer.Stop();
 	}
 
+	public static int bytea4_to_int(byte[] arg) {
+		return arg[0] + (arg[1] << 8) + (arg[2] << 16) + (arg[3] << 24);
+	}
+
 	private static void update(object source, ElapsedEventArgs e) {
-		// Accept any incoming connections!
 		ArrayList listenList = new ArrayList();
 		listenList.Add(_connection_socket);
 		Socket.Select(listenList, null, null, 1000);
@@ -47,18 +66,21 @@ public class ShootServer {
 			Console.WriteLine("connected!");
 		}
 
-		// Read data from the connections!
 		if (_connections.Count != 0) {
 			ArrayList connections = new ArrayList (_connections);
 			Socket.Select(connections, null, null, 1000);
-			// Go through all sockets that have data incoming!
 			foreach (Socket socket in connections) {
-				byte[] receivedbytes = new byte[512];
+				byte[] length_header = new byte[4];
+				socket.Receive(length_header);
+				int len = bytea4_to_int(length_header);
+				Console.WriteLine("read length:"+len);
 
+
+				/*
+				byte[] receivedbytes = new byte[512];
 				ArrayList buffer = (ArrayList)_byteBuffer[_connections.IndexOf(socket)];
 				int read = socket.Receive(receivedbytes);
-				for (int i=0;i<read;i++)
-					buffer.Add(receivedbytes[i]);
+				for (int i=0;i<read;i++) buffer.Add(receivedbytes[i]);
 
 				while (true && buffer.Count > 0) {
 					int length = (byte)buffer[0];
@@ -72,11 +94,10 @@ public class ShootServer {
 						byte[] readbytes = (byte[])thismsgBytes.ToArray(typeof(byte));
 
 						MessageData readMsg = MessageData.FromByteArray(readbytes);
-						_buffer.Add(readMsg);
 					}
-					else
-						break;
+					else break;
 				}
+				*/
 
 				// string output = Encoding.UTF8.GetString(bytes);
 			}           
