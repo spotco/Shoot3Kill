@@ -10,4 +10,7 @@ public class SPMessage {
 	public List<SPPlayerObject> _players;
 	public List<SPBulletObject> _bullets;
 
+		public SPMessage create_local_message(Player p) {
+			
+		}
 }
