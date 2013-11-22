@@ -1,2 +1,3 @@
 #!/bin/bash
-gmcs ShootServer.cs MessageData.cs SPPlayerObject.cs Vector3.cs 
+rm *.exe
+gmcs ShootServer.cs *.cs

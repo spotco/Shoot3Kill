@@ -2,12 +2,13 @@
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Collections.Generic;
+using System.Collections;
 
 [Serializable]
 public class SPMessage {
-
-	public List<SPPlayerObject> _players;
-	public List<SPBulletObject> _bullets;
+	public int test1 = 0;
+	public int test2 = 5;
+	//public ArrayList _players = new ArrayList();
+	//public ArrayList _bullets = new ArrayList();
 
 }
