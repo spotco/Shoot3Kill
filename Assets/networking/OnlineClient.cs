@@ -26,7 +26,7 @@ public class OnlineClient : MonoBehaviour {
 	{
 		instance = this;
 		Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse("127.0.0.1");
+		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse("54.193.0.73");
 		System.Net.IPEndPoint   remoteEndPoint = new System.Net.IPEndPoint(remoteIPAddress, 6996);
 		socket.Connect(remoteEndPoint);
 		_socket = socket;
