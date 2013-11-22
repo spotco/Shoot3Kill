@@ -8,11 +8,11 @@ public class Player {
 	public GameObject _player_object { get; set;}
 	public int _id {get; set;}
 	public string _name {get; set;}
-	public Vector3 _pos { get; set; }
-	public Vector3 _vel { get; set; }
-	public Vector3 _rotation { get; set; }
+	public SPVector _pos { get; set; }
+	public SPVector _vel { get; set; }
+	public SPVector _rotation { get; set; }
 	public int _alive { get; set; }
-		private Timer timer;
+	private Timer timer;
 
 	public Player(SPPlayerObject player_message) {
 		instance = this;
@@ -21,7 +21,7 @@ public class Player {
 		this._pos = player_message._pos;
 		this._vel = player_message._vel;
 		this._rotation = player_message._rot;
-		this._alive = player_message._alive;			                                   
+				//this._alive = player_message._alive;			                                   
 	}
 	
 
@@ -33,24 +33,12 @@ public class Player {
 		return _player_object;
 	}
 
-	public void set_player_object(GameObject player_object) {
-		this._player_object = player_object;
-	}
-
 	public void update() {
-		MotionSimulatedPlayer player_component = _player_object.GetComponent<MotionSimulatedPlayer> ();
-
-		player_component._pos.x = _pos.x;
-		player_component._pos.y = _pos.y;
-		player_component._pos.z = _pos.z;
-
-		player_component._vel.x = _vel.x;
-		player_component._vel.y = _vel.y;
-		player_component._vel.z = _vel.z;
-
-		player_component._rotation.x = _rotation.x;
-		player_component._rotation.y = _rotation.y;
-		player_component._rotation.z = _rotation.z;
+				Vector3 pos = _player_object.transform.position;
+				pos.x += _vel._x;
+				pos.y += _vel._y;
+				pos.z += _vel._z;
+				_player_object.transform.position = pos;
 	}
 
 	public void respawn(){
@@ -65,7 +53,7 @@ public class Player {
 
 		void spawn(object sender, EventArgs e){
 			this._alive = 1;
-			this._pos = new Vector3 (0.0f, 0.0f, 0.0f);
+			this._pos = new SPVector(0.0f, 0.0f, 0.0f);
 			timer.Stop();			
 	}
 
@@ -76,7 +64,7 @@ public class Player {
 			myObject._pos = _pos;
 			myObject._vel = _vel;
 			myObject._rot = _rotation;
-			myObject._alive = _alive;
+			//myObject._alive = _alive;
 
 			return myObject;
 	}

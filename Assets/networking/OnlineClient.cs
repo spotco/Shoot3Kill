@@ -12,15 +12,14 @@ using System.Threading;
 
 public class OnlineClient : MonoBehaviour {
 	
+	public static OnlineClient instance;
 	public static int _player_id = -((new System.Random()).Next()%100)-1;
 	static Socket _socket = null;
 	static int _last_next_size = -1;
 	
 	private static readonly object _send_lock = new object();
 	private static readonly object _recieve_lock = new object();
-	
-	static OnlineClient instance;
-	
+
 	static Thread _request_thread;
 	
 	void Start ()
@@ -130,7 +129,12 @@ public class OnlineClient : MonoBehaviour {
 			neu_obj._rot = SPVector.from_jsonobject(player.ToJSON("rot"));
 			
 			neu_message._players.Add(neu_obj);
+			
 		}
+		
+		OnlinePlayerManager opm = OnlinePlayerManager.instance; 
+		opm.read_message (neu_message);
+		
 	}
 	
 	void Update() {
