@@ -8,8 +8,7 @@ public class OnlinePlayerManager : MonoBehaviour
 		static Hashtable player_table;
 		static Hashtable bullet_table;
 		static Player the_player;
-		static SPMessage global_msg; 
-		List<SPBulletObject> player_bullets;
+		static List<SPBulletObject> player_bullets;
 			
 		void Start ()
 		{
@@ -17,7 +16,6 @@ public class OnlinePlayerManager : MonoBehaviour
 				bullet_table = new Hashtable ();
 				player_bullets = new List<SPBulletObject>();
 		}
-
 
 		void Update ()
 		{
@@ -37,6 +35,7 @@ public class OnlinePlayerManager : MonoBehaviour
 
 				SPMessage new_message = new SPMessage ();
 
+
 				new_message._players.Add(myPlayer);
 
 				//socketmagicfuckerysendtoserver (new_message);
@@ -49,10 +48,10 @@ public class OnlinePlayerManager : MonoBehaviour
 				the_player = thine_player;
 		}
 
+
 		void create_bullet(SPBulletObject new_bullet){
 				player_bullets.add (new_bullet);
 		} 
-
 
 		void read_message (SPMessage new_message) {
 				foreach (SPPlayerObject player_msg in new_message._players) {
@@ -61,12 +60,14 @@ public class OnlinePlayerManager : MonoBehaviour
 								Player new_player = new Player (player_msg);
 								player_table.Add (id, new_player);
 						} else {
+				
 								if (player_msg._alive == 0) {
 										destroy_player ((Player)player_table [id]);
 								} else {
 										update_player (id, player_msg);
 								}
 						}
+						
 				}
 
 				foreach (SPBulletObject bullet_msg in new_message._bullets) {
@@ -153,6 +154,7 @@ public class OnlinePlayerManager : MonoBehaviour
 
 		void update_bullet (string id, SPBulletObject bullet_msg)
 		{
+		
 				Bullet bullet_to_update = (Bullet) bullet_table [id];
 				bullet_to_update._bul_pos = bullet_msg._pos;
 				bullet_to_update._bul_vel = bullet_msg._vel;

@@ -5,9 +5,10 @@ using System;
 
 [System.Serializable]
 public class PlayerControl : MonoBehaviour {
-
-	Rigidbody _body;
-	public Transform _model_transform;
+	
+	public static PlayerControl instance;
+	
+	public Rigidbody _body;
 	public float JUMP_FORCE = 220f;
 	public float MOVE_SPEED = 4f;
 
@@ -19,8 +20,7 @@ public class PlayerControl : MonoBehaviour {
 	void Start () {
 		_body = gameObject.GetComponent<Rigidbody>();
 		_body.freezeRotation = true;
-		_model_transform = Util.FindInHierarchy(gameObject,"test_player").transform;
-
+		instance = this;
 	}
 
 	void Update () {

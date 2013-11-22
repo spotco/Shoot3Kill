@@ -5,9 +5,9 @@ using System.Timers;
 public class Player {
 	public static Player instance;
 
-		public GameObject _player_object { get; set;}
-		public int _id {get; set;}
-		public string _name {get; set;}
+	public GameObject _player_object { get; set;}
+	public int _id {get; set;}
+	public string _name {get; set;}
 	public Vector3 _pos { get; set; }
 	public Vector3 _vel { get; set; }
 	public Vector3 _rotation { get; set; }
