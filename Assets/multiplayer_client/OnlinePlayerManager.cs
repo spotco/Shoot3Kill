@@ -83,8 +83,6 @@ public class OnlinePlayerManager : MonoBehaviour
 						if (p._player_object == null) {
 								GameObject new_player_object = (GameObject)Instantiate (Resources.Load ("onlineplayer"));
 								p._player_object = new_player_object;
-						} else {
-								p.update ();
 						}
 				}
 

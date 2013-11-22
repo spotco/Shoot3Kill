@@ -33,7 +33,7 @@ public class Player {
 		return _player_object;
 	}
 
-	public void update() {
+	public void Update() {
 				Vector3 pos = _player_object.transform.position;
 				pos.x += _vel._x;
 				pos.y += _vel._y;
