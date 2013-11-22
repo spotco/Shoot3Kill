@@ -2,12 +2,13 @@
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
+using UnityEngine;
 
 [Serializable]
 public class SPBulletObject {
 	public int _id;
 	public int _playerid;
-	public SPVector3 _pos;
-	public SPVector3 _vel;
-	public SPVector3 _rot;
+	public Vector3 _pos;
+	public Vector3 _vel;
+	public Vector3 _rot;
 }
