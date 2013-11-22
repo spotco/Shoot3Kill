@@ -11,4 +11,7 @@ public class SPMessage {
 	//public ArrayList _players = new ArrayList();
 	//public ArrayList _bullets = new ArrayList();
 
+		public SPMessage create_local_message(Player p) {
+			
+		}
 }
