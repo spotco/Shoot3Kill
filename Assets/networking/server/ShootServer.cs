@@ -20,7 +20,6 @@ public class ShootServer  {
 		s._on_message = (string msg) => {
 			JSON js = new JSON();
 			js.serialized = msg;
-			Console.WriteLine(msg);
 			int id = js.ToInt("playerid");
 			string name = js.ToString("name");
 			
@@ -44,9 +43,19 @@ public class ShootServer  {
 			tar_obj._pos = pos;
 			tar_obj._vel = vel;
 			tar_obj._rot = rot;
+			tar_obj.__timeout = 30;
 			
 		};
 		s._on_broadcast = () => {
+			
+			foreach(int key in _pid_to_player.Keys) {
+				SPPlayerObject obj = _pid_to_player[key];
+				obj.__timeout--;
+				if (obj.__timeout <= 0) {
+					_pid_to_player.Remove(key);	
+				}
+			}
+			
 			JSON rtv = new JSON();
 			ArrayList players = new ArrayList();
 			rtv.fields["players"] = players;
@@ -67,7 +76,7 @@ public class ShootServer  {
 				evts.Add(SPEvent.to_jsonobj(spevt));	
 			}
 			_queued_events.Clear();
-			
+			Console.WriteLine(rtv.serialized);
 			return rtv.serialized;
 		};
 
@@ -127,5 +136,7 @@ public class SPPlayerObject {
 	public SPVector _pos;
 	public SPVector _vel;
 	public SPVector _rot;
+	
+	public int __timeout;
 }
 
