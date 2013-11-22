@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-[Serializable]
 public class SPBulletObject {
 	public int _id;
 	public int _playerid;

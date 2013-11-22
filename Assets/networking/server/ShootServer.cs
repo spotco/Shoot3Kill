@@ -15,6 +15,9 @@ public class ShootServer  {
 		s._on_message = (string msg) => {
 			Console.WriteLine(msg);
 		};
+		s._on_broadcast = () => {
+			return "";	
+		};
 
 		while (true) {
 			Console.WriteLine("Q to quit");

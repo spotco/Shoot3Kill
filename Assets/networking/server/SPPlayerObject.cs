@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-[Serializable]
 public class SPPlayerObject {
 	public int _id;
 	public string _name;

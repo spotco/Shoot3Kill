@@ -8,10 +8,9 @@ public class PlayerControl : MonoBehaviour {
 
 	Rigidbody _body;
 	public Transform _model_transform;
-	public float JUMP_FORCE = 225;
+	public float JUMP_FORCE = 220f;
 	public float MOVE_SPEED = 4f;
 
-	public int _jump_count;
 	public int _jump_cooldown;
 	public int _move_cooldown;
 	public Vector3 _ground_normal;
@@ -20,25 +19,15 @@ public class PlayerControl : MonoBehaviour {
 	void Start () {
 		_body = gameObject.GetComponent<Rigidbody>();
 		_body.freezeRotation = true;
-		_jump_count = 0;
 		_model_transform = Util.FindInHierarchy(gameObject,"test_player").transform;
 
 	}
 
 	void Update () {
-		if (Input.GetKey(KeyCode.Space) && on_ground()) {
-			_jump_count = 2;
-		}
-		if (_jump_count > 0 && _jump_cooldown <= 0 && Input.GetKey(KeyCode.Space)) {
-			_jump_count--;
+		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;
 			Vector3 jump_dir = new Vector3(0,1,0);
-
-			if (on_ground()) {
-				jump_dir = _ground_normal;
-				jump_dir = Util.vector_add(jump_dir,new Vector3(0,1,0));
-			}
 			jump_dir.Normalize();
 			jump_dir.Scale(new Vector3(JUMP_FORCE,JUMP_FORCE,JUMP_FORCE));
 			_body.AddForce(jump_dir);
@@ -91,7 +80,7 @@ public class PlayerControl : MonoBehaviour {
 		}
 
 		if (Math.Abs(neu_vel.x) < 0.2f) neu_vel.x = 0;
-		if (Math.Abs(neu_vel.y) < 0.2f) neu_vel.y = 0;
+		//if (Math.Abs(neu_vel.y) < 0.2f) neu_vel.y = 0;
 		if (Math.Abs(neu_vel.z) < 0.2f) neu_vel.z = 0;
 		_body.velocity = neu_vel;
 

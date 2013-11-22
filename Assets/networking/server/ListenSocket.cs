@@ -25,10 +25,12 @@ public class ListenSocket {
 
 	public delegate void OnMessage(string msg);
 	public delegate void OnEvent();
+	public delegate string OnBroadcast();
 
 	public OnMessage _on_message;
 	public OnEvent _on_connection_start;
 	public OnEvent _on_connection_end;
+	public OnBroadcast _on_broadcast;
 
 	public void init() {
 		_connection_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);     
@@ -43,6 +45,7 @@ public class ListenSocket {
 		_on_message = (string msg)=>{};
 		_on_connection_end = ()=>{};
 		_on_connection_start = ()=>{};
+		_on_broadcast = () => {return "";};
 	}
 
 	public void stop() {
@@ -59,7 +62,7 @@ public class ListenSocket {
 		foreach(DataPhase dp in _data_phase) all_sockets.Add(dp._socket);
 		Socket.Select(null,all_sockets,null,1000);
 		foreach(Socket s in all_sockets) {
-			byte[] msg = serialize_object("server_out");
+			byte[] msg = serialize_object(_on_broadcast());
 			byte[] len_header = int_to_bytea4(msg.Length);
 			s.Send(len_header);
 			s.Send(msg);

@@ -10,6 +10,14 @@ using System.IO;
 using UnityEngine;
 
 public class Client : MonoBehaviour {
+	
+	public void recieve_message(string msg) {
+		
+	}
+	
+	public string send_message() {
+		return "";	
+	}
 
 	Socket _socket;
 	System.Timers.Timer timer;
@@ -37,11 +45,11 @@ public class Client : MonoBehaviour {
 			byte[] rcc = new byte[_last_next_size];
 			_socket.Receive(rcc);
 			string s = (string)ListenSocket.deserialize_object(rcc);
-			Debug.Log(s);
+			recieve_message(msg);
 
 		}
 
-		byte[] serialized_msg_bytes = serialize_object("msg_from_player_"+cid);
+		byte[] serialized_msg_bytes = serialize_object(send_message());
 		Debug.Log(serialized_msg_bytes.Length);
 		byte[] len_header = int_to_bytea4(serialized_msg_bytes.Length);
 		_socket.Send(len_header);
