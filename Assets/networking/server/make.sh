@@ -1,3 +1,3 @@
 #!/bin/bash
 rm *.exe
-gmcs ShootServer.cs ListenSocket.cs ../../../JSON.cs
+gmcs ServerAsync.cs ../../util/IOut.cs

@@ -31,11 +31,24 @@ public class PlayerControl : MonoBehaviour {
 	
 	int _bullet_cooldown = 0;
 	void Update () {
+		if (Input.GetKey(KeyCode.P)) {
+			GameObject maincam = Util.FindInHierarchy(gameObject,"Main Camera");
+			GameObject vrcam = Util.FindInHierarchy(gameObject,"OVRCameraController");
+			maincam.SetActive(true);
+			vrcam.SetActive(false);
+		} else if (Input.GetKey(KeyCode.O)) {
+			GameObject maincam = Util.FindInHierarchy(gameObject,"Main Camera");
+			GameObject vrcam = Util.FindInHierarchy(gameObject,"OVRCameraController");
+			maincam.SetActive(false);
+			vrcam.SetActive(true);	
+		}
+		
+		
 		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
 		
 		if (Input.GetMouseButton(0) && _bullet_cooldown <= 0) {
 			BulletManager.instance.add_bullet(_camera_transform.position,_camera_transform.forward);
-			
+			EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
 		}
 		
 		
@@ -135,6 +148,7 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision col) {
+		
 		ContactPoint contact = col.contacts[0];
 		_ground_normal = contact.normal;
 		Vector3 vel = _body.velocity;
