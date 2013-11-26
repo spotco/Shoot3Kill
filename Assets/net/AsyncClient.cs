@@ -16,7 +16,7 @@ public class AsyncClient : MonoBehaviour {
 	Socket _server_socket;
 
 	bool _id_alloced = false;
-	int _player_id;
+	public static int _player_id;
 
 	void Start () {
 		Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -38,7 +38,12 @@ public class AsyncClient : MonoBehaviour {
 		_listen_socket.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
 	}
 
+
+	long _TEST_LAST = 0;
 	void read_callback(IAsyncResult res) {
+		ChatWindow.TEST_LAST_UPDATE = ""+(DateTime.Now.Ticks-_TEST_LAST);
+		_TEST_LAST = DateTime.Now.Ticks;
+
 		AsyncReadState state = (AsyncReadState) res.AsyncState;
 		Socket handler = state._socket;
 		int read = handler.EndReceive(res);
@@ -54,11 +59,13 @@ public class AsyncClient : MonoBehaviour {
 					start = i + 1;
 				}
 			}
+
 			state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
 			handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
 			
 		} else {
 			msg_recieved(state._msg.ToString());
+			handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
 		}
 	}
 
@@ -94,13 +101,25 @@ public class AsyncClient : MonoBehaviour {
 		OnlinePlayerManager.instance.msg_recieved(msg);
 		BulletManager.instance.msg_recieved(msg);
 	}
-	
+
+	Vector3 _last_body_position;
+	bool _has_last_position = false; 
 	void Update () {
 		SPClientMessage msg = new SPClientMessage();
 		msg._player._pos = Util.vector3_to_spvector(gameObject.transform.position);
 		msg._player._rot = Util.vector3_to_spvector(gameObject.transform.eulerAngles);
-		msg._player._vel = Util.vector3_to_spvector(gameObject.rigidbody.velocity);
+		if (!_has_last_position) {
+			msg._player._vel._x = 0;
+			msg._player._vel._y = 0;
+			msg._player._vel._z = 0;
+		} else {
+			msg._player._vel._x = gameObject.transform.position.x - _last_body_position.x;
+			msg._player._vel._y = gameObject.transform.position.y - _last_body_position.y;
+			msg._player._vel._z = gameObject.transform.position.z - _last_body_position.z;
+
+		}
 		msg._player._id = _player_id;
+
 
 		foreach (Bullet b in BulletManager.instance._bullets) {
 			SPBulletObject obj = new SPBulletObject();
@@ -111,5 +130,8 @@ public class AsyncClient : MonoBehaviour {
 		}
 
 		send_message(msg.to_json().ToString());
+
+		_last_body_position = gameObject.transform.position;
+		_has_last_position = true;
 	}
 }

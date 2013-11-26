@@ -28,9 +28,13 @@ public class PlayerControl : MonoBehaviour {
 		
 		_camera_transform = Util.FindInHierarchy(gameObject,"Main Camera").transform;
 	}
+
+	bool _menu_up = false;
 	
 	int _bullet_cooldown = 0;
 	void Update () {
+		if (Input.GetKeyDown(KeyCode.Escape)) _menu_up = !_menu_up;
+
 		if (Input.GetKey(KeyCode.P)) {
 			GameObject maincam = Util.FindInHierarchy(gameObject,"Main Camera");
 			GameObject vrcam = Util.FindInHierarchy(gameObject,"OVRCameraController");
@@ -125,7 +129,11 @@ public class PlayerControl : MonoBehaviour {
 	static float FPS_LOOK_SCALE = 2.5f;
 
 	void fps_turn() {
-		if (!Input.mousePresent) return;
+		if (_menu_up || !Input.mousePresent) {
+			Screen.showCursor = true;
+			Screen.lockCursor = false;
+			return;
+		}
 		Screen.showCursor = false;
 		Screen.lockCursor = true;
 

@@ -32,7 +32,7 @@ public class SPBulletObject {
 	}
 	
 	public static SPBulletObject from_json(JSONObject jso) {
-		SPBulletObject rtv = new SPBulletObject(0,0,new SPVector(0,0,0),new SPVector(0,0,0),new SPVector(0,0,0));
+		SPBulletObject rtv = new SPBulletObject();
 		rtv._id = (int)jso.GetNumber("id");
 		rtv._playerid = (int)jso.GetNumber("player_id");
 		rtv._pos = SPVector.from_json(jso.GetObject("pos"));

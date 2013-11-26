@@ -19,7 +19,7 @@ public class AsyncReadState {
 
 public class ServerAsync {
 	
-	public static int PORT = 7004;
+	public static int PORT = 7009;
 	static ManualResetEvent _accept_thread_block = new ManualResetEvent(false);
 
 	public static void Main(string[] args) {
@@ -30,7 +30,7 @@ public class ServerAsync {
 
 		Socket connection_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		connection_socket.Bind(new IPEndPoint ( IPAddress.Any , PORT));
-		connection_socket.Listen(PORT);
+		connection_socket.Listen(100);
 		while (true) {
 			_accept_thread_block.Reset();
 			connection_socket.BeginAccept(new AsyncCallback(accept_callback),connection_socket);
@@ -56,34 +56,42 @@ public class ServerAsync {
 	}
 
 	public static void send_callback(IAsyncResult res) {
+			Socket listener = (Socket) res.AsyncState;
 		try {
-			Socket listner = (Socket) res.AsyncState;
-			listner.EndSend(res);
-		} catch (Exception e) {}
+			listener.EndSend(res);
+		} catch (Exception e) {
+			listener.Close();
+		}
 	}
 
 	public static void read_callback(IAsyncResult res) {
-		AsyncReadState state = (AsyncReadState) res.AsyncState;
-		Socket handler = state._socket;
-		int read = handler.EndReceive(res);
-		send_action(handler);
 
-		if (read > 0) {
-			int start = 0;
-			int i = 0;
-			for (; i < read; i++) {
-				if (state._buffer[i] == (byte)'\0') {
-					state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
-					msg_recieved(state._msg.ToString());
-					state._msg.Remove(0,state._msg.Length);
-					start = i + 1;
+			AsyncReadState state = (AsyncReadState) res.AsyncState;
+			Socket handler = state._socket;
+			int read = handler.EndReceive(res);
+
+		try {
+			if (read > 0) {
+				int start = 0;
+				int i = 0;
+				for (; i < read; i++) {
+					if (state._buffer[i] == (byte)'\0') {
+						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
+						msg_recieved(state._msg.ToString());
+						send_action(handler);
+						state._msg.Remove(0,state._msg.Length);
+						start = i + 1;
+					}
 				}
-			}
-			state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
-			handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
+				state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
+				handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
 
-		} else {
-			msg_recieved(state._msg.ToString());
+			} else {
+				msg_recieved(state._msg.ToString());
+				send_action(handler);
+			}
+		} catch (Exception e){
+			handler.Close();
 		}
 	}
 
@@ -159,7 +167,7 @@ public class ServerAsync {
 				tar_obj._pos = next_client_msg._player._pos;
 				tar_obj._rot = next_client_msg._player._rot;
 				tar_obj._vel = next_client_msg._player._vel;
-				tar_obj.__timeout = 50;
+				tar_obj.__timeout = 25;
 			}
 		}
 
@@ -177,8 +185,6 @@ public class ServerAsync {
 				_events.Remove(evt);
 			}
 		}
-
-		Console.WriteLine(msg_send());
 
 	}
 }
