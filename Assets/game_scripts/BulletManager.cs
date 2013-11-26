@@ -25,7 +25,12 @@ public class BulletManager : MonoBehaviour {
 	
 	public void add_bullet(Vector3 position, Vector3 vel) {
 		GameObject bullet_object = (GameObject)Instantiate(Resources.Load("Bullet"));
+		bullet_object.transform.parent = gameObject.transform;
 		_bullets.Add(new Bullet(position,vel,bullet_object));
+	}
+
+	public void msg_recieved(SPServerMessage msg) {
+
 	}
 }
 
@@ -33,8 +38,8 @@ public class BulletManager : MonoBehaviour {
 public class Bullet {
 	
 	public Vector3 _position;
-	Vector3 _vel;
-	GameObject _obj;
+	public Vector3 _vel;
+	public GameObject _obj;
 	private int _ct = 0;
 	
 	public Bullet(Vector3 position, Vector3 vel,GameObject obj) {

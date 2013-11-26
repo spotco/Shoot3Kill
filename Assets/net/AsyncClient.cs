@@ -14,14 +14,18 @@ public class AsyncClient : MonoBehaviour {
 
 	Socket _listen_socket;
 	Socket _server_socket;
-	
+
+	bool _id_alloced = false;
+	int _player_id;
+
 	void Start () {
 		Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse("127.0.0.1");
 		System.Net.IPEndPoint   remoteEndPoint = new System.Net.IPEndPoint(remoteIPAddress, ServerAsync.PORT);
 		socket.BeginConnect(remoteEndPoint,new AsyncCallback(connect_callback),socket);
-
 		_listen_socket = socket;
+
+		_player_id = Math.Abs(((int)DateTime.Now.Ticks))%10000000 * -1;
 	}
 
 	void connect_callback(IAsyncResult res) {
@@ -73,14 +77,39 @@ public class AsyncClient : MonoBehaviour {
 		return true;
 	}
 
-	void msg_recieved(string msg) {
-		Debug.Log ("recieved:"+msg);
+//-------------------------------------
+
+	void msg_recieved(string msg_str) {
+		SPServerMessage msg = SPServerMessage.from_json(JSONObject.Parse(msg_str));
+
+		if (!_id_alloced) {
+			foreach (SPEvent evt in msg._events) {
+				if (evt._type == SPEvent.TYPE_ALLOC_ID && evt._player_id == _player_id) {
+					_player_id = evt._value;
+					_id_alloced = true;
+				}
+			}
+		}
+
+		OnlinePlayerManager.instance.msg_recieved(msg);
+		BulletManager.instance.msg_recieved(msg);
 	}
 	
 	void Update () {
-		JSONObject jso = new JSONObject();
-		jso.Add("test",2);
-		jso.Add("test2",new JSONArray());
-		Debug.Log(jso.ToString());
+		SPClientMessage msg = new SPClientMessage();
+		msg._player._pos = Util.vector3_to_spvector(gameObject.transform.position);
+		msg._player._rot = Util.vector3_to_spvector(gameObject.transform.eulerAngles);
+		msg._player._vel = Util.vector3_to_spvector(gameObject.rigidbody.velocity);
+		msg._player._id = _player_id;
+
+		foreach (Bullet b in BulletManager.instance._bullets) {
+			SPBulletObject obj = new SPBulletObject();
+			obj._pos = Util.vector3_to_spvector(b._position);
+			obj._vel = Util.vector3_to_spvector(b._vel);
+			obj._rot = Util.vector3_to_spvector(b._obj.transform.eulerAngles);
+			msg._bullets.Add(obj);
+		}
+
+		send_message(msg.to_json().ToString());
 	}
 }

@@ -45,6 +45,7 @@ public class PlayerControl : MonoBehaviour {
 		
 		
 		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
+
 		
 		if (Input.GetMouseButton(0) && _bullet_cooldown <= 0) {
 			BulletManager.instance.add_bullet(_camera_transform.position,_camera_transform.forward);
@@ -119,20 +120,17 @@ public class PlayerControl : MonoBehaviour {
 		fps_turn();
 	}
 
-	Vector3 _last_mouse_position;
 	Vector3 _xy_angle = Vector3.zero;
 	static float MAX_X_ANGLE = 45;
-	static float FPS_LOOK_SCALE = 0.3f;
+	static float FPS_LOOK_SCALE = 2.5f;
 
 	void fps_turn() {
 		if (!Input.mousePresent) return;
 		Screen.showCursor = false;
+		Screen.lockCursor = true;
 
-		Vector3 mouse_delta = new Vector3(Input.mousePosition.x - _last_mouse_position.x, Input.mousePosition.y - _last_mouse_position.y);
-		_last_mouse_position = Input.mousePosition;
-
-		_xy_angle.y += mouse_delta.x * FPS_LOOK_SCALE;
-		_xy_angle.x -= mouse_delta.y * FPS_LOOK_SCALE;
+		_xy_angle.y += Input.GetAxis("Mouse X") * FPS_LOOK_SCALE;
+		_xy_angle.x -= Input.GetAxis("Mouse Y") * FPS_LOOK_SCALE;
 
 		if (Math.Abs(_xy_angle.x) > MAX_X_ANGLE) {
 			_xy_angle.x = Util.sig(_xy_angle.x) * MAX_X_ANGLE;

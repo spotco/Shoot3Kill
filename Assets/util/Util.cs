@@ -6,6 +6,14 @@ public class Util{
 
 	public static System.Random rand = new System.Random();
 
+	public static SPVector vector3_to_spvector(Vector3 v) {
+		return new SPVector(v.x,v.y,v.z);
+	}
+
+	public static Vector3 spvector_to_vector3(SPVector v) {
+		return new Vector3(v._x,v._y,v._z);
+	}
+
 	public static float rand_range(float min, float max) {
 		float r = (float)rand.NextDouble();
 		return (max-min)*r + min;

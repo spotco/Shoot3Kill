@@ -64,9 +64,10 @@
      <Compile Include="Assets\SimpleParticlePack\Scripts\ParticleTester.cs" />
      <Compile Include="Assets\game_scripts\BulletManager.cs" />
      <Compile Include="Assets\game_scripts\EffectManager.cs" />
+     <Compile Include="Assets\game_scripts\OnlinePlayerManager.cs" />
      <Compile Include="Assets\game_scripts\PlayerControl.cs" />
      <Compile Include="Assets\net\AsyncClient.cs" />
-     <Compile Include="Assets\net\server\SPDefs.cs" />
+     <Compile Include="Assets\net\SPDefs.cs" />
      <Compile Include="Assets\net\server\ServerAsync.cs" />
      <Compile Include="Assets\util\IOut.cs" />
      <Compile Include="Assets\util\JSONObject.cs" />
