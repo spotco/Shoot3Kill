@@ -5,6 +5,8 @@ Project("{4E0DA53F-99A5-6D68-F3D9-BD5E07528ACE}") = "Shoot3Kill", "Assembly-CSha
 EndProject
 Project("{4E0DA53F-99A5-6D68-F3D9-BD5E07528ACE}") = "Shoot3Kill", "Assembly-CSharp.csproj", "{1F2EADAC-8620-657E-24DD-2F1B66332413}"
 EndProject
+Project("{4E0DA53F-99A5-6D68-F3D9-BD5E07528ACE}") = "Shoot3Kill", "Assembly-CSharp-Editor.csproj", "{ECDDD591-C5CB-4DDB-61A6-54D191EE4BD1}"
+EndProject
 Project("{4E0DA53F-99A5-6D68-F3D9-BD5E07528ACE}") = "Shoot3Kill", "Assembly-UnityScript-firstpass.unityproj", "{2E0661B9-B2B3-1A44-105D-8A873DA27483}"
 EndProject
 Global
@@ -21,6 +23,10 @@ Global
 		{1F2EADAC-8620-657E-24DD-2F1B66332413}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F2EADAC-8620-657E-24DD-2F1B66332413}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F2EADAC-8620-657E-24DD-2F1B66332413}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECDDD591-C5CB-4DDB-61A6-54D191EE4BD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECDDD591-C5CB-4DDB-61A6-54D191EE4BD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECDDD591-C5CB-4DDB-61A6-54D191EE4BD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECDDD591-C5CB-4DDB-61A6-54D191EE4BD1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E0661B9-B2B3-1A44-105D-8A873DA27483}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E0661B9-B2B3-1A44-105D-8A873DA27483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E0661B9-B2B3-1A44-105D-8A873DA27483}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -29,7 +35,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																																																	GlobalSection(MonoDevelopProperties) = preSolution
+																																																																																																	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1

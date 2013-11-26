@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
-namespace Boomlagoon.JSON {
 	
+//https://bitbucket.org/boomlagoon/boomlagoon-json
+
 	public static class Extensions {
 		public static T Pop<T>(this List<T> list) {
 			var result = list[list.Count - 1];
@@ -792,4 +792,3 @@ namespace Boomlagoon.JSON {
 			}
 		}
 	}
-}
