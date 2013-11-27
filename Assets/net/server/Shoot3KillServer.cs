@@ -145,6 +145,7 @@ public class Shoot3KillServer {
 
 	List<SPEvent> _events = new List<SPEvent>();
 	Dictionary<int,SPPlayerObject> _id_to_players = new Dictionary<int, SPPlayerObject>();
+	Dictionary<string,SPBulletObject> _key_to_bullets = new Dictionary<string, SPBulletObject>();
 
 	Queue<string> _queued_client_msgs = new Queue<string>();
 	readonly object _queued_client_msgs_lock = new object();
@@ -161,6 +162,10 @@ public class Shoot3KillServer {
 
 		foreach(int id in _id_to_players.Keys) {
 			msg._players.Add(_id_to_players[id]);
+		}
+
+		foreach(string bullet_key in _key_to_bullets.Keys) {
+			//todo -- add
 		}
 
 		foreach(SPEvent evt in _events) {
@@ -213,7 +218,15 @@ public class Shoot3KillServer {
 				tar_obj._rot = next_client_msg._player._rot;
 				tar_obj._vel = next_client_msg._player._vel;
 				tar_obj.__timeout = 25;
+
+				foreach(SPBulletObject b in next_client_msg._bullets) {
+					//todo -- add
+				}
 			}
+		}
+
+		foreach(string key in _key_to_bullets.Keys) {
+			//todo -- remove timeout
 		}
 
 		List<int> ids_to_remove = new List<int>();

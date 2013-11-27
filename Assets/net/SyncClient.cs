@@ -103,13 +103,14 @@ public class SyncClient : MonoBehaviour {
 			
 		}
 		msg._player._id = PlayerInfo._id;
-		
-		
+
 		foreach (Bullet b in BulletManager.instance._bullets) {
 			SPBulletObject obj = new SPBulletObject();
 			obj._pos = Util.vector3_to_spvector(b._position);
 			obj._vel = Util.vector3_to_spvector(b._vel);
 			obj._rot = Util.vector3_to_spvector(b._obj.transform.eulerAngles);
+			obj._id = b._id;
+			obj._playerid = obj._playerid;
 			msg._bullets.Add(obj);
 		}
 		

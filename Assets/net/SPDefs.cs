@@ -11,6 +11,8 @@ public class SPBulletObject {
 	public SPVector _vel  = new SPVector(0,0,0);
 	public SPVector _rot  = new SPVector(0,0,0);
 
+	public int __timeout = 20;
+
 	public SPBulletObject(){}
 
 	public SPBulletObject(int id, int playerid, SPVector pos, SPVector vel, SPVector rot) {
@@ -39,6 +41,10 @@ public class SPBulletObject {
 		rtv._vel = SPVector.from_json(jso.GetObject("vel"));
 		rtv._rot = SPVector.from_json(jso.GetObject("rot"));
 		return rtv;
+	}
+
+	public string unique_key() {
+		return _playerid + "_" + _id;
 	}
 }
 

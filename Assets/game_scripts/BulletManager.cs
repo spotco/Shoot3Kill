@@ -23,30 +23,36 @@ public class BulletManager : MonoBehaviour {
 	}
 	
 	
+	int _allocid = 0;
+
 	public void add_bullet(Vector3 position, Vector3 vel) {
 		GameObject bullet_object = (GameObject)Instantiate(Resources.Load("Bullet"));
 		bullet_object.transform.parent = gameObject.transform;
-		_bullets.Add(new Bullet(position,vel,bullet_object));
+		_bullets.Add(new Bullet(position,vel,bullet_object,_allocid));
+		_allocid++;
 	}
 
 	public void msg_recieved(SPServerMessage msg) {
-
+		//todo -- process
 	}
 }
 
 
 public class Bullet {
-	
+
+	public int _id;
 	public Vector3 _position;
 	public Vector3 _vel;
 	public GameObject _obj;
-	private int _ct = 0;
+
+	public int __ct = 0;
 	
-	public Bullet(Vector3 position, Vector3 vel,GameObject obj) {
+	public Bullet(Vector3 position, Vector3 vel,GameObject obj, int id) {
 		_position = position;
 		_vel = vel;
 		_obj = obj; 
-		_ct = 50;
+		_id = id;
+		__ct = 50;
 		_obj.transform.position = position;
 		_obj.transform.forward = _vel;
 	}
@@ -56,11 +62,11 @@ public class Bullet {
 		_position.y += _vel.y;
 		_position.z += _vel.z;
 		_obj.transform.position = _position;
-		_ct--;
+		__ct--;
 	}
 	
 	public bool should_remove() {
-		return _ct <= 0;	
+		return __ct <= 0;	
 	}
 	
 	public void do_remove() {
