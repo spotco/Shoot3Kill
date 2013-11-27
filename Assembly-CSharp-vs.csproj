@@ -66,10 +66,11 @@
      <Compile Include="Assets\game_scripts\EffectManager.cs" />
      <Compile Include="Assets\game_scripts\OnlinePlayerManager.cs" />
      <Compile Include="Assets\game_scripts\PlayerControl.cs" />
-     <Compile Include="Assets\net\AsyncClient.cs" />
+     <Compile Include="Assets\net\PlayerInfo.cs" />
      <Compile Include="Assets\net\SPDefs.cs" />
-     <Compile Include="Assets\net\server\ServerAsync.cs" />
-     <Compile Include="Assets\net\server\sockpol.cs" />
+     <Compile Include="Assets\net\SyncClient.cs" />
+     <Compile Include="Assets\net\server\Shoot3KillServer.cs" />
+     <Compile Include="Assets\net\server\SocketPolicyServer.cs" />
      <Compile Include="Assets\ui_scripts\ChatWindow.cs" />
      <Compile Include="Assets\util\IOut.cs" />
      <Compile Include="Assets\util\JSONObject.cs" />

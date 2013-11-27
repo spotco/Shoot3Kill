@@ -1,3 +1,3 @@
 #!/bin/bash
-rm *.exe
-gmcs ServerAsync.cs ../../util/IOut.cs ../SPDefs.cs ../../util/JSONObject.cs
+rm Shoot3KillServer.exe
+gmcs /define:SERVER Shoot3KillServer.cs ../../util/IOut.cs ../SPDefs.cs ../../util/JSONObject.cs SocketPolicyServer.cs

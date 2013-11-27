@@ -23,7 +23,7 @@ public class OnlinePlayerManager : MonoBehaviour {
 			SPServerMessage msg = _enqueued_messages.Dequeue();
 
 			foreach(SPPlayerObject obj in msg._players) {
-				if (obj._id == AsyncClient._player_id) continue;
+				if (obj._id == PlayerInfo._id) continue;
 				
 				if (!_id_to_onlineplayer.ContainsKey(obj._id)) {
 					GameObject player_gameobj = (GameObject)Instantiate(Resources.Load("onlineplayer"));
@@ -34,8 +34,6 @@ public class OnlinePlayerManager : MonoBehaviour {
 				
 				_id_to_onlineplayer[obj._id].msg_recieved(obj);
 			}
-
-			Debug.Log("playersjs:"+msg._players.Count+" inmap:"+_id_to_onlineplayer.Count);
 		}
 
 		foreach(int id in _id_to_onlineplayer.Keys) {
