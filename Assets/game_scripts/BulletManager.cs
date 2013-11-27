@@ -20,6 +20,17 @@ public class BulletManager : MonoBehaviour {
                         b.do_remove();
                 }
         }
+
+		List<string> keys_to_remove = new List<string>();
+		foreach(string key in _enemy_bullets.Keys) {
+			Bullet b = _enemy_bullets[key];
+			b.update();
+			if (b.should_remove()) keys_to_remove.Add(key);
+		}
+		foreach(string key in keys_to_remove) {
+			_enemy_bullets[key].do_remove();
+			_enemy_bullets.Remove(key);
+		}
 	}
 	
 	
@@ -32,8 +43,28 @@ public class BulletManager : MonoBehaviour {
 		_allocid++;
 	}
 
+	Dictionary<string,Bullet> _enemy_bullets = new Dictionary<string, Bullet>();
+
 	public void msg_recieved(SPServerMessage msg) {
-		//todo -- process
+		foreach(SPBulletObject b in msg._bullets) {
+			if (b._playerid == PlayerInfo._id) continue;
+			if (!_enemy_bullets.ContainsKey(b.unique_key())) {
+				GameObject bullet_object = (GameObject)Instantiate(Resources.Load("Bullet"));
+				bullet_object.transform.parent = gameObject.transform;
+				_enemy_bullets[b.unique_key()] = new Bullet(new Vector3(),new Vector3(b._vel._x,b._vel._y,b._vel._z),bullet_object,-1);
+			}
+
+			Bullet tar = _enemy_bullets[b.unique_key()];
+			tar._position.x = b._pos._x;
+			tar._position.y = b._pos._y;
+			tar._position.z = b._pos._z;
+
+			tar._vel.x = b._vel._x;
+			tar._vel.y = b._vel._y;
+			tar._vel.z = b._vel._z;
+
+			tar.__ct = 50;
+		}
 	}
 }
 

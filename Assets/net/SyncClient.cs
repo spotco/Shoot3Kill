@@ -36,7 +36,6 @@ public class SyncClient : MonoBehaviour {
 	void request_thread() {
 		AsyncReadState state = new AsyncReadState();
 		while (true) {
-
 			ChatWindow.TEST_LAST_UPDATE = ""+(DateTime.Now.Ticks-_TEST_LAST);
 			_TEST_LAST = DateTime.Now.Ticks;
 
@@ -56,12 +55,13 @@ public class SyncClient : MonoBehaviour {
 				state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
 				
 			} else {
-				if (state._msg.Length > 0) {
-					msg_recieved(state._msg.ToString());
-				}
+				break;
 			}
 		}
 	}
+
+	Queue<SPServerMessage> _msg_queue = new Queue<SPServerMessage>();
+	readonly object _msg_queue_lock = new object();
 
 	void msg_recieved(string msg_str) {
 		SPServerMessage msg = SPServerMessage.from_json(JSONObject.Parse(msg_str));
@@ -74,9 +74,11 @@ public class SyncClient : MonoBehaviour {
 				}
 			}
 		}
-		
-		OnlinePlayerManager.instance.msg_recieved(msg);
-		BulletManager.instance.msg_recieved(msg);
+
+		lock (_msg_queue_lock) {
+			if (_msg_queue.Count > 0) _msg_queue.Clear();
+			_msg_queue.Enqueue(msg);
+		}
 	}
 
 	bool send_message(string msg) {
@@ -89,6 +91,19 @@ public class SyncClient : MonoBehaviour {
 	Vector3 _last_body_position;
 	bool _has_last_position = false; 
 	void Update () {
+		while(true) {
+			bool cont;
+			SPServerMessage cur_msg = null;
+			lock (_msg_queue_lock) {
+				cont = _msg_queue.Count > 0;
+				if (cont) cur_msg = _msg_queue.Dequeue();
+			}
+			if (!cont) break;
+
+			OnlinePlayerManager.instance.msg_recieved(cur_msg);
+			BulletManager.instance.msg_recieved(cur_msg);
+		}
+
 		SPClientMessage msg = new SPClientMessage();
 		msg._player._pos = Util.vector3_to_spvector(gameObject.transform.position);
 		msg._player._rot = Util.vector3_to_spvector(gameObject.transform.eulerAngles);
@@ -104,17 +119,20 @@ public class SyncClient : MonoBehaviour {
 		}
 		msg._player._id = PlayerInfo._id;
 
+
 		foreach (Bullet b in BulletManager.instance._bullets) {
 			SPBulletObject obj = new SPBulletObject();
 			obj._pos = Util.vector3_to_spvector(b._position);
 			obj._vel = Util.vector3_to_spvector(b._vel);
 			obj._rot = Util.vector3_to_spvector(b._obj.transform.eulerAngles);
 			obj._id = b._id;
-			obj._playerid = obj._playerid;
+			obj._playerid = PlayerInfo._id;
 			msg._bullets.Add(obj);
 		}
 		
-		send_message(msg.to_json().ToString());
+		send_message(msg.to_json().ToString()); 
+		//todo -- move this to another thread (it will hang, even with timeout)
+		//todo -- server when get a message, clear socket
 		
 		_last_body_position = gameObject.transform.position;
 		_has_last_position = true;

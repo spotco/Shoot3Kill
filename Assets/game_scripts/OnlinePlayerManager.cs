@@ -10,31 +10,24 @@ public class OnlinePlayerManager : MonoBehaviour {
 	}
 
 	Dictionary<int,OnlinePlayer> _id_to_onlineplayer = new Dictionary<int, OnlinePlayer>();
-	Queue<SPServerMessage> _enqueued_messages = new Queue<SPServerMessage>();
 
 	public void msg_recieved(SPServerMessage msg) {
-		if (_enqueued_messages.Count != 0) _enqueued_messages.Clear();
-		_enqueued_messages.Enqueue(msg);
+		foreach(SPPlayerObject obj in msg._players) {
+			if (obj._id == PlayerInfo._id) continue;
+			
+			if (!_id_to_onlineplayer.ContainsKey(obj._id)) {
+				GameObject player_gameobj = (GameObject)Instantiate(Resources.Load("onlineplayer"));
+				player_gameobj.AddComponent<OnlinePlayer>();
+				_id_to_onlineplayer[obj._id] = player_gameobj.GetComponent<OnlinePlayer>();
+				_id_to_onlineplayer[obj._id].init();
+			}
+			
+			_id_to_onlineplayer[obj._id].msg_recieved(obj);
+		}
 	}
 
 	List<int> _to_remove = new List<int>();
 	void Update () {
-		while(_enqueued_messages.Count > 0){
-			SPServerMessage msg = _enqueued_messages.Dequeue();
-
-			foreach(SPPlayerObject obj in msg._players) {
-				if (obj._id == PlayerInfo._id) continue;
-				
-				if (!_id_to_onlineplayer.ContainsKey(obj._id)) {
-					GameObject player_gameobj = (GameObject)Instantiate(Resources.Load("onlineplayer"));
-					player_gameobj.AddComponent<OnlinePlayer>();
-					_id_to_onlineplayer[obj._id] = player_gameobj.GetComponent<OnlinePlayer>();
-					_id_to_onlineplayer[obj._id].init();
-				}
-				
-				_id_to_onlineplayer[obj._id].msg_recieved(obj);
-			}
-		}
 
 		foreach(int id in _id_to_onlineplayer.Keys) {
 			OnlinePlayer p = _id_to_onlineplayer[id];

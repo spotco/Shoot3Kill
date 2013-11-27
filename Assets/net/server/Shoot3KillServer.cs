@@ -10,7 +10,7 @@ using System.Threading;
 
 public class AsyncReadState {
 	public Socket _socket = null;
-	public const int BUFFER_SIZE = 1024;
+	public const int BUFFER_SIZE = 65535;
 	public byte[] _buffer = new byte[BUFFER_SIZE];
 	public StringBuilder _msg = new StringBuilder();
 }
@@ -127,7 +127,6 @@ public class Shoot3KillServer {
 					IOut.Log(state._msg.ToString());
 				}
 				state._msg.Remove(0,state._msg.Length);
-				send_action(handler);
 			}
 
 				
@@ -165,7 +164,7 @@ public class Shoot3KillServer {
 		}
 
 		foreach(string bullet_key in _key_to_bullets.Keys) {
-			//todo -- add
+			msg._bullets.Add(_key_to_bullets[bullet_key]);
 		}
 
 		foreach(SPEvent evt in _events) {
@@ -217,17 +216,31 @@ public class Shoot3KillServer {
 				tar_obj._pos = next_client_msg._player._pos;
 				tar_obj._rot = next_client_msg._player._rot;
 				tar_obj._vel = next_client_msg._player._vel;
-				tar_obj.__timeout = 25;
+				tar_obj.__timeout = 10;
 
 				foreach(SPBulletObject b in next_client_msg._bullets) {
-					//todo -- add
+					if (!_key_to_bullets.ContainsKey(b.unique_key())) {
+						_key_to_bullets[b.unique_key()] = new SPBulletObject();
+					}
+
+					SPBulletObject tar = _key_to_bullets[b.unique_key()];
+					tar._id = b._id;
+					tar._playerid = b._playerid;
+					tar._pos = b._pos.copy();
+					tar._rot = b._rot.copy();
+					tar._vel = b._vel.copy();
+					tar.__timeout = 10;
 				}
 			}
 		}
 
+		List<string> uniquekeys_to_remove = new List<string>();
 		foreach(string key in _key_to_bullets.Keys) {
-			//todo -- remove timeout
+			SPBulletObject b = _key_to_bullets[key];
+			b.__timeout--;
+			if (b.__timeout <= 0) uniquekeys_to_remove.Add(key);
 		}
+		foreach(string key in uniquekeys_to_remove) _key_to_bullets.Remove(key);
 
 		List<int> ids_to_remove = new List<int>();
 		foreach(int id in _id_to_players.Keys) {

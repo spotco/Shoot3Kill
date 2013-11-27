@@ -104,6 +104,10 @@ public class SPVector {
 		);
 		return rtv;
 	}
+
+	public SPVector copy() {
+		return new SPVector(_x,_y,_z);
+	}
 }
 
 public class SPPlayerObject {
