@@ -161,8 +161,8 @@ public class Shoot3KillServer {
 	int _allocid = 0;
 
 	public void msg_recieved(string msg) {
-		ChatWindow.TEST_LAST_UPDATE = CUtil.time_since("msg_recieved") + "ms";
-		CUtil.time_start("msg_recieved");
+		//ChatWindow.TEST_LAST_UPDATE = CUtil.time_since("msg_recieved") + "ms";
+		//CUtil.time_start("msg_recieved");
 
 		lock (_queued_client_msgs_lock) {
 			_queued_client_msgs.Enqueue(msg);
