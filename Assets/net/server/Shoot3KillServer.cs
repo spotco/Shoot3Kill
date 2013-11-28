@@ -10,14 +10,14 @@ using System.Threading;
 
 public class AsyncReadState {
 	public Socket _socket = null;
-	public const int BUFFER_SIZE = 65535;
+	public const int BUFFER_SIZE = 8191;
 	public byte[] _buffer = new byte[BUFFER_SIZE];
 	public StringBuilder _msg = new StringBuilder();
 }
 
 public class Shoot3KillServer {
 	
-	public static int PORT = 6976;
+	public static int PORT = 6999;
 
 	public static void Main(string[] args) {
 		SocketPolicyServer server = new SocketPolicyServer (SocketPolicyServer.AllPolicy);
@@ -53,7 +53,7 @@ public class Shoot3KillServer {
 		_update_thread = new Thread(new ThreadStart(()=>{
 			while (true) {
 				update ();
-				Thread.Sleep(100);
+				Thread.Sleep(20);
 			}
 		}));
 		_update_thread.Start();
@@ -84,7 +84,18 @@ public class Shoot3KillServer {
 		AsyncReadState state = new AsyncReadState();
 		state._socket = handler;
 		handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
+
 		send_action(state._socket);
+		Thread send_thread = new Thread(new ThreadStart(()=>{
+			while (true) {
+				Thread.Sleep(5);
+				if (!handler.Connected) {
+					break;
+				}
+				send_action(state._socket);
+			}
+		}));
+		send_thread.Start();
 	}
 
 	public void send_action(Socket target) {
@@ -106,6 +117,7 @@ public class Shoot3KillServer {
 		Socket handler = state._socket;
 		try {
 			int read = handler.EndReceive(res);
+
 			if (read > 0) {
 				int start = 0;
 				int i = 0;
@@ -113,7 +125,6 @@ public class Shoot3KillServer {
 					if (state._buffer[i] == (byte)'\0') {
 						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
 						msg_recieved(state._msg.ToString());
-						send_action(handler);
 						state._msg.Remove(0,state._msg.Length);
 						start = i + 1;
 					}
@@ -124,17 +135,16 @@ public class Shoot3KillServer {
 			} else {
 				if (state._msg.Length > 0) {
 					msg_recieved(state._msg.ToString());
-					IOut.Log(state._msg.ToString());
 				}
 				state._msg.Remove(0,state._msg.Length);
 			}
 
-				
+		} catch (SocketException e){
+			handler.Close();
 
-		} catch (Exception e){
+		} catch (Exception e) {
 			handler.Close();
 		}
-
 
 	}
 
@@ -156,22 +166,34 @@ public class Shoot3KillServer {
 		}
 	}
 
+	string _cached_msg_send = (new SPServerMessage()).to_json().ToString();
+	readonly object _msg_send_lock = new object();
 	public string msg_send() {
-		SPServerMessage msg = new SPServerMessage();
+		string rtv;
+		lock (_msg_send_lock) {
+			rtv = _cached_msg_send;
+		}
+		return rtv;
+	}
 
+	void update_msg_send() {
+		SPServerMessage msg = new SPServerMessage();
+		
 		foreach(int id in _id_to_players.Keys) {
 			msg._players.Add(_id_to_players[id]);
 		}
-
+		
 		foreach(string bullet_key in _key_to_bullets.Keys) {
 			msg._bullets.Add(_key_to_bullets[bullet_key]);
 		}
-
+		
 		foreach(SPEvent evt in _events) {
 			msg._events.Add(evt);
 		}
-
-		return msg.to_json().ToString();
+		
+		lock (_msg_send_lock) {
+			_cached_msg_send = msg.to_json().ToString();
+		}
 	}
 
 	private void update() {
@@ -232,6 +254,8 @@ public class Shoot3KillServer {
 					tar.__timeout = 10;
 				}
 			}
+
+			update_msg_send();
 		}
 
 		List<string> uniquekeys_to_remove = new List<string>();
@@ -259,7 +283,6 @@ public class Shoot3KillServer {
 				_events.RemoveAt(i);
 			}
 		}
-
 	}
 }
 

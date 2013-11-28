@@ -30,10 +30,13 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	bool _menu_up = false;
+	bool _hold_fire = false;
+	float _test_theta = 0;
 	
 	int _bullet_cooldown = 0;
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Escape)) _menu_up = !_menu_up;
+		if (Input.GetKeyDown(KeyCode.Tab)) _hold_fire = !_hold_fire;
 
 		if (Input.GetKey(KeyCode.P)) {
 			GameObject maincam = Util.FindInHierarchy(gameObject,"Main Camera");
@@ -48,15 +51,20 @@ public class PlayerControl : MonoBehaviour {
 		}
 		
 		
-		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
 
-		
-		if (Input.GetMouseButton(0) && _bullet_cooldown <= 0) {
+
+		if (_hold_fire) {
+			_test_theta+=0.05f;
+			_body.velocity = new Vector3(Mathf.Cos (_test_theta),0,Mathf.Sin(_test_theta));
+		}
+
+		if ( (Input.GetMouseButton(0) || _hold_fire)  /*&& _bullet_cooldown <= 0 */) {
 			BulletManager.instance.add_bullet(_camera_transform.position,_camera_transform.forward);
-			EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
+			//EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
 		}
 		
-		
+		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
+
 		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;

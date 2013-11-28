@@ -64,6 +64,7 @@ public class BulletManager : MonoBehaviour {
 			tar._vel.z = b._vel._z;
 
 			tar.__ct = 50;
+			tar.update();
 		}
 	}
 }

@@ -67,11 +67,14 @@ class SocketPolicyServer {
 		policy = Encoding.UTF8.GetBytes (xml);
 	}
 
+	//public static int PORT = 843;
+	public static int PORT = 844;
+
 	public int Start ()
 	{
 		try {
 			listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			listen_socket.Bind (new IPEndPoint (IPAddress.Any, 843));
+			listen_socket.Bind (new IPEndPoint (IPAddress.Any, PORT));
 			listen_socket.Listen (500);
 			listen_socket.Blocking = false;
 		}
