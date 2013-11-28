@@ -11,14 +11,15 @@ using System.Threading;
 
 public class CUtil {
 
-
-	static long _start;
-	public static void time_start() {
-		_start = DateTime.Now.Ticks;
+	
+	static Dictionary<string,long> _starts = new Dictionary<string, long>();
+	public static void time_start(string name) {
+		_starts[name] = DateTime.Now.Ticks;
 	}
 
-	public static long time_since() {
-		return DateTime.Now.Ticks - _start;
+	public static long time_since(string name) {
+		if (!_starts.ContainsKey(name)) return 0;
+		return DateTime.Now.Ticks - _starts[name];
 	}
 
 }

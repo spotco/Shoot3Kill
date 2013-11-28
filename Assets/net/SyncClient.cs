@@ -19,88 +19,96 @@ public class SyncClient : MonoBehaviour {
 	bool _id_alloced = false;
 
 	void Start () {
+		Security.PrefetchSocketPolicy("127.0.0.1",SocketPolicyServer.PORT,2000);
 
-		Security.PrefetchSocketPolicy("127.0.0.1",SocketPolicyServer.PORT);
-
+		PlayerInfo._id = Math.Abs(((int)DateTime.Now.Ticks))%10000000 * -1;
 		Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse("127.0.0.1");
 		System.Net.IPEndPoint   remoteEndPoint = new System.Net.IPEndPoint(remoteIPAddress, Shoot3KillServer.PORT);
-		socket.Connect(remoteEndPoint);
 
+
+		socket.BeginConnect(remoteEndPoint,(IAsyncResult res)=>{
+			_socket = (Socket) res.AsyncState;
+			_socket.EndConnect(res);
+
+			int sr_ct = 0;
+
+			_request_thread = new Thread(new ThreadStart(() => {
+				AsyncReadState state = new AsyncReadState();
+				while (true) {
+					int read = _socket.Receive(state._buffer);
+					
+					if (read > 0) {
+						int start = 0;
+						int i = 0;
+						
+						for (; i < read; i++) {
+							if (state._buffer[i] == (byte)'\0') {
+								state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
+								msg_recieved(state._msg.ToString());
+								state._msg.Remove(0,state._msg.Length);
+								start = i + 1;
+							}
+						}
+						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
+						
+					} else {
+						Debug.Log ("ERROR::request thread end, server down");
+						break;
+					}
+
+					sr_ct--;
+				}
+			}));
+			_request_thread.Start();
+			
+			_send_thread = new Thread(new ThreadStart(() => {
+				while (true) {
+					if ((_socket == null || !_socket.Connected) || sr_ct > 10) {
+						Thread.Sleep(40);
+						continue;
+						
+					}
+					
+					string msg_text = null;
+					bool cont = false;
+					lock (_msg_send_queue) {
+						cont = _msg_send_queue.Count > 0;
+						if (cont) msg_text = _msg_send_queue.Dequeue();
+					}
+					if (!cont) {
+						Thread.Sleep(40);
+						continue;
+					}
+					
+					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+'\0');
+					_socket.Send(msg_bytes);
+
+					sr_ct++;
+				}
+			}));
+			_send_thread.Start();
+		},socket);
+
+
+#if SOCKET_SYNC
+		socket.Connect(remoteEndPoint);
 		_socket = socket;
 		_request_thread = new Thread(new ThreadStart(request_thread));
 		_request_thread.Start();
-
+		
 		_send_thread = new Thread(new ThreadStart(send_thread));
 		_send_thread.Start();
-
-		PlayerInfo._id = Math.Abs(((int)DateTime.Now.Ticks))%10000000 * -1;
-	}
-
-	void request_thread() {
-		AsyncReadState state = new AsyncReadState();
-		while (true) {
-			int read = _socket.Receive(state._buffer);
-
-			CUtil.time_start();
-			if (read > 0) {
-				int start = 0;
-				int i = 0;
-
-				for (; i < read; i++) {
-					if (state._buffer[i] == (byte)'\0') {
-						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
-						msg_recieved(state._msg.ToString());
-						state._msg.Remove(0,state._msg.Length);
-						start = i + 1;
-					}
-				}
-				state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
-				
-			} else {
-				break;
-			}
-		}
+#endif
 	}
 
 	Queue<string> _msg_recieve_queue = new Queue<string>();
+	Queue<string> _msg_send_queue = new Queue<string>();
 
 	void msg_recieved(string msg_str) {
-		ChatWindow.TEST_LAST_UPDATE = CUtil.time_since()+"ms";
-		CUtil.time_start();
-
 		lock (_msg_recieve_queue) {
 			if (_msg_recieve_queue.Count > 0) _msg_recieve_queue.Clear();
 			_msg_recieve_queue.Enqueue(msg_str);
-		}
-	}
-
-	Queue<string> _msg_send_queue = new Queue<string>();
-	bool _send_ok = true;
-
-	void send_thread() {
-		while (true) {
-			if ((_socket == null || !_socket.Connected)) {
-				Thread.Sleep(40);
-				continue;
-
-			}
-
-			string msg_text = null;
-			bool cont = false;
-			lock (_msg_send_queue) {
-				cont = _msg_send_queue.Count > 0;
-				if (cont) msg_text = _msg_send_queue.Dequeue();
-			}
-			if (!cont) {
-				Thread.Sleep(40);
-				continue;
-			}
-
-			_send_ok = false;
-
-			byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+'\0');
-			_socket.Send(msg_bytes);
 		}
 	}
 
@@ -120,6 +128,11 @@ public class SyncClient : MonoBehaviour {
 	Vector3 _last_body_position;
 	bool _has_last_position = false; 
 	void Update () {
+		if (!_socket.Connected) {
+			Debug.Log ("not connected");
+			return;
+		}
+
 		while(true) {
 			bool cont;
 			string msg_str = null;

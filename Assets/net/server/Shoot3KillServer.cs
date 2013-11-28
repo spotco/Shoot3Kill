@@ -45,7 +45,6 @@ public class Shoot3KillServer {
 	Thread _accept_thread;
 
 	public void start() {
-
 		_connection_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		_connection_socket.Bind(new IPEndPoint ( IPAddress.Any , PORT));
 		_connection_socket.Listen(100);
@@ -83,69 +82,69 @@ public class Shoot3KillServer {
 
 		AsyncReadState state = new AsyncReadState();
 		state._socket = handler;
-		handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);
 
-		send_action(state._socket);
+		int sr_ct = 0;
+
+		AsyncCallback receive_callback = null;
+		receive_callback = new AsyncCallback((IAsyncResult rec_res) => {
+			sr_ct--;
+
+			AsyncReadState rec_state = (AsyncReadState) rec_res.AsyncState;
+			Socket rec_handler = rec_state._socket;
+			try {
+				int read = rec_handler.EndReceive(rec_res);
+				
+				if (read > 0) {
+					int start = 0;
+					int i = 0;
+					for (; i < read; i++) {
+						if (rec_state._buffer[i] == (byte)'\0') {
+							rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
+							msg_recieved(rec_state._msg.ToString());
+							rec_state._msg.Remove(0,rec_state._msg.Length);
+							start = i + 1;
+						}
+					}
+					rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,read-start));
+					rec_handler.BeginReceive(rec_state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,rec_state);	
+					
+				} else {
+					if (rec_state._msg.Length > 0) {
+						msg_recieved(rec_state._msg.ToString());
+					}
+					rec_state._msg.Remove(0,rec_state._msg.Length);
+				}
+				
+			} catch (Exception e) {
+				rec_handler.Close();
+			}
+		});
+
+		handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,state);
+
 		Thread send_thread = new Thread(new ThreadStart(()=>{
 			while (true) {
-				Thread.Sleep(5);
+				Thread.Sleep(40);
+				if (sr_ct > 10) continue;
+
 				if (!handler.Connected) {
 					break;
 				}
-				send_action(state._socket);
+				byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+'\0');
+
+				state._socket.BeginSend(msg_bytes,0,msg_bytes.Length,0,new AsyncCallback((IAsyncResult send_res) => {
+					sr_ct++;
+
+					Socket send_listener = (Socket) send_res.AsyncState;
+					try {
+						send_listener.EndSend(send_res);
+					} catch (Exception e) {
+						send_listener.Close();
+					}
+				}),state._socket);
 			}
 		}));
 		send_thread.Start();
-	}
-
-	public void send_action(Socket target) {
-		byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+'\0');
-		target.BeginSend(msg_bytes,0,msg_bytes.Length,0,new AsyncCallback(send_callback),target);
-	}
-
-	public void send_callback(IAsyncResult res) {
-		Socket listener = (Socket) res.AsyncState;
-		try {
-			listener.EndSend(res);
-		} catch (Exception e) {
-			listener.Close();
-		}
-	}
-
-	public void read_callback(IAsyncResult res) {
-		AsyncReadState state = (AsyncReadState) res.AsyncState;
-		Socket handler = state._socket;
-		try {
-			int read = handler.EndReceive(res);
-
-			if (read > 0) {
-				int start = 0;
-				int i = 0;
-				for (; i < read; i++) {
-					if (state._buffer[i] == (byte)'\0') {
-						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
-						msg_recieved(state._msg.ToString());
-						state._msg.Remove(0,state._msg.Length);
-						start = i + 1;
-					}
-				}
-				state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
-				handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,new AsyncCallback(read_callback),state);	
-
-			} else {
-				if (state._msg.Length > 0) {
-					msg_recieved(state._msg.ToString());
-				}
-				state._msg.Remove(0,state._msg.Length);
-			}
-
-		} catch (SocketException e){
-			handler.Close();
-
-		} catch (Exception e) {
-			handler.Close();
-		}
-
 	}
 
 //----------------------------------------------
