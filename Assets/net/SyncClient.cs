@@ -18,12 +18,14 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
+	public static string SERVER = "54.245.123.189";
+
 	void Start () {
-		Security.PrefetchSocketPolicy("127.0.0.1",SocketPolicyServer.PORT,2000);
+		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);
 
 		PlayerInfo._id = Math.Abs(((int)DateTime.Now.Ticks))%10000000 * -1;
 		Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse("127.0.0.1");
+		System.Net.IPAddress    remoteIPAddress  = System.Net.IPAddress.Parse(SERVER);
 		System.Net.IPEndPoint   remoteEndPoint = new System.Net.IPEndPoint(remoteIPAddress, Shoot3KillServer.PORT);
 
 
@@ -128,7 +130,7 @@ public class SyncClient : MonoBehaviour {
 	Vector3 _last_body_position;
 	bool _has_last_position = false; 
 	void Update () {
-		if (!_socket.Connected) {
+		if (_socket == null || !_socket.Connected) {
 			Debug.Log ("not connected");
 			return;
 		}
