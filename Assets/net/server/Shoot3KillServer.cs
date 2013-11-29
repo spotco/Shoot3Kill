@@ -114,10 +114,13 @@ public class Shoot3KillServer {
 						msg_recieved(rec_state._msg.ToString());
 					}
 					rec_state._msg.Remove(0,rec_state._msg.Length);
+					rec_handler.Close();
+					IOut.Log ("connection closed");
 				}
 				
 			} catch (Exception e) {
 				rec_handler.Close();
+				IOut.Log("exception:"+e.GetType()+" msg:"+e.Message+" stack:"+e.StackTrace);
 			}
 		});
 
@@ -141,6 +144,7 @@ public class Shoot3KillServer {
 						send_listener.EndSend(send_res);
 					} catch (Exception e) {
 						send_listener.Close();
+						IOut.Log("sendexception:"+e.GetType()+" msg:"+e.Message+" stack:"+e.StackTrace);
 					}
 				}),state._socket);
 			}
@@ -161,9 +165,6 @@ public class Shoot3KillServer {
 	int _allocid = 0;
 
 	public void msg_recieved(string msg) {
-		//ChatWindow.TEST_LAST_UPDATE = CUtil.time_since("msg_recieved") + "ms";
-		//CUtil.time_start("msg_recieved");
-
 		lock (_queued_client_msgs_lock) {
 			_queued_client_msgs.Enqueue(msg);
 		}
