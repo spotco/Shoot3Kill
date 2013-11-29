@@ -102,9 +102,8 @@ public class Shoot3KillServer {
 						if (rec_state._buffer[i] == (byte)'\0') {
 							try {
 								rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
-							} catch (Exception e) {
-								IOut.Log ("enc_ascii_err_in_loop ("+start+","+i+") "+e.GetType());
-							}
+							} catch (Exception e) {}
+
 							msg_recieved(rec_state._msg.ToString());
 							rec_state._msg.Remove(0,rec_state._msg.Length);
 							start = i + 1;
@@ -112,9 +111,8 @@ public class Shoot3KillServer {
 					}
 					try {
 						rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,read-start));
-					} catch (Exception e) {
-						IOut.Log ("enc_ascii_err_after_loop ("+start+","+read+") "+e.GetType());
-					}
+					} catch (Exception e) {}
+
 					rec_handler.BeginReceive(rec_state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,rec_state);	
 					
 				} else {
@@ -125,7 +123,10 @@ public class Shoot3KillServer {
 					rec_handler.Close();
 					IOut.Log ("connection closed");
 				}
-				
+
+			} catch (SocketException e) {
+				rec_handler.Close();
+
 			} catch (Exception e) {
 				rec_handler.Close();
 				IOut.Log("exception:"+e.GetType()+" msg:"+e.Message+" stack:"+e.StackTrace);
@@ -152,7 +153,6 @@ public class Shoot3KillServer {
 						send_listener.EndSend(send_res);
 					} catch (Exception e) {
 						send_listener.Close();
-						IOut.Log("sendexception:"+e.GetType()+" msg:"+e.Message+" stack:"+e.StackTrace);
 					}
 				}),state._socket);
 			}
@@ -218,7 +218,14 @@ public class Shoot3KillServer {
 			}
 			if (queue_empty) break;
 
-			SPClientMessage next_client_msg = SPClientMessage.from_json(JSONObject.Parse(next_client_msg_str));
+			SPClientMessage next_client_msg = null;
+			try {
+				next_client_msg = SPClientMessage.from_json(JSONObject.Parse(next_client_msg_str));
+			} catch (Exception e) {
+				IOut.Log ("---[BAD JSON]---");
+				IOut.Log (next_client_msg_str);
+				continue;
+			}
 
 			if (next_client_msg._player._id < 0) {
 				if (!_generated_ids_outstanding.Contains(next_client_msg._player._id)) {
