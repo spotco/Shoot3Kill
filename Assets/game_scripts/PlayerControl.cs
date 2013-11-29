@@ -58,7 +58,7 @@ public class PlayerControl : MonoBehaviour {
 			_body.velocity = new Vector3(Mathf.Cos (_test_theta),0,Mathf.Sin(_test_theta));
 		}
 
-		if ( (Input.GetMouseButton(0) || _hold_fire)  /*&& _bullet_cooldown <= 0 */) {
+		if ( (Input.GetMouseButton(0) /*|| _hold_fire*/)  /*&& _bullet_cooldown <= 0 */) {
 			Vector3 bullet_vel = _camera_transform.forward;
 			bullet_vel.Normalize();
 			bullet_vel = Util.vector_scale(bullet_vel,0.25f);

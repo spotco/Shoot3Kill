@@ -18,8 +18,8 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
-	//public static string SERVER = "54.245.123.189";
-	public static string SERVER = "127.0.0.1";
+	public static string SERVER = "54.245.123.189";
+	//public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);
@@ -51,6 +51,7 @@ public class SyncClient : MonoBehaviour {
 								msg_recieved(state._msg.ToString());
 								state._msg.Remove(0,state._msg.Length);
 								start = i + 1;
+								send_ok = true;
 							}
 						}
 						state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,read-start));
@@ -59,8 +60,6 @@ public class SyncClient : MonoBehaviour {
 						Debug.Log ("ERROR::request thread end, server down");
 						break;
 					}
-
-					send_ok = true;
 				}
 			}));
 			_request_thread.Start();
@@ -97,12 +96,16 @@ public class SyncClient : MonoBehaviour {
 	Queue<string> _msg_recieve_queue = new Queue<string>();
 	Queue<string> _msg_send_queue = new Queue<string>();
 
+	int _cttest = 0;
+
 	void msg_recieved(string msg_str) {
 		ChatWindow.TEST_LAST_UPDATE = (IUtil.time_since("msg_recieved")/10000) + "ms";
 		IUtil.time_start("msg_recieved");
 
+		_cttest++;
+
 		lock (_msg_recieve_queue) {
-			if (_msg_recieve_queue.Count > 0) _msg_recieve_queue.Clear();
+			_msg_recieve_queue.Clear();
 			_msg_recieve_queue.Enqueue(msg_str);
 		}
 	}
@@ -182,6 +185,9 @@ public class SyncClient : MonoBehaviour {
 		
 		_last_body_position = gameObject.transform.position;
 		_has_last_position = true;
+
+		Debug.Log (_cttest);
+		_cttest = 0;
 	}
 
 }
