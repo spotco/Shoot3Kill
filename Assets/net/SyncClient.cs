@@ -18,8 +18,8 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
-	public static string SERVER = "54.245.123.189";
-	//public static string SERVER = "127.0.0.1";
+	//public static string SERVER = "54.245.123.189";
+	public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);
@@ -46,8 +46,11 @@ public class SyncClient : MonoBehaviour {
 						int i = 0;
 						
 						for (; i < read; i++) {
-							if (state._buffer[i] == (byte)'\0') {
+							if (state._buffer[i] == (byte)Shoot3KillServer.MSG_TERMINATOR) {
 								state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
+
+								IUtil.i2 = state._msg.Length;
+
 								msg_recieved(state._msg.ToString());
 								state._msg.Remove(0,state._msg.Length);
 								start = i + 1;
@@ -83,7 +86,10 @@ public class SyncClient : MonoBehaviour {
 						continue;
 					}
 					
-					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+'\0');
+					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+Shoot3KillServer.MSG_TERMINATOR);
+
+					IUtil.i1 = msg_bytes.Length;
+
 					_socket.Send(msg_bytes);
 
 					send_ok = false;
@@ -95,14 +101,14 @@ public class SyncClient : MonoBehaviour {
 
 	Queue<string> _msg_recieve_queue = new Queue<string>();
 	Queue<string> _msg_send_queue = new Queue<string>();
-
-	int _cttest = 0;
-
+	
 	void msg_recieved(string msg_str) {
 		ChatWindow.TEST_LAST_UPDATE = (IUtil.time_since("msg_recieved")/10000) + "ms";
 		IUtil.time_start("msg_recieved");
 
-		_cttest++;
+		ChatWindow.TEST_LAST_UPDATE = IUtil.i1 + " , "+IUtil.i2;
+
+		Debug.Log (msg_str);
 
 		lock (_msg_recieve_queue) {
 			_msg_recieve_queue.Clear();
@@ -186,8 +192,6 @@ public class SyncClient : MonoBehaviour {
 		_last_body_position = gameObject.transform.position;
 		_has_last_position = true;
 
-		Debug.Log (_cttest);
-		_cttest = 0;
 	}
 
 }

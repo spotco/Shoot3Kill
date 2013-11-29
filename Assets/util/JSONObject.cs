@@ -128,7 +128,8 @@ using System.Text;
 				return Boolean ? "true" : "false";
 				
 			case JSONValueType.Number:
-				return Number.ToString();
+				if (System.Math.Round(Number) == Number) return Number.ToString();
+				return string.Format("{0:0.00}", Number);
 				
 			case JSONValueType.String:
 				return "\"" + Str + "\"";

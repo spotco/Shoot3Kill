@@ -11,6 +11,7 @@ using System.Threading;
 
 public class IUtil {
 
+	public static int i1,i2;
 	
 	static Dictionary<string,long> _starts = new Dictionary<string, long>();
 	public static void time_start(string name) {
