@@ -92,8 +92,6 @@ public class Shoot3KillServer {
 
 		AsyncCallback receive_callback = null;
 		receive_callback = new AsyncCallback((IAsyncResult rec_res) => {
-			send_ok = true;
-
 			AsyncReadState rec_state = (AsyncReadState) rec_res.AsyncState;
 			Socket rec_handler = rec_state._socket;
 			try {
@@ -109,6 +107,7 @@ public class Shoot3KillServer {
 							} catch (Exception e) {}
 							string stv = rec_state._msg.ToString();
 							if (stv.Trim() != "") {
+								send_ok = true;
 								msg_recieved(stv,connection_id);
 							}
 							rec_state._msg.Remove(0,rec_state._msg.Length);
