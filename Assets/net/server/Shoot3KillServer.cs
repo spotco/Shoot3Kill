@@ -100,7 +100,11 @@ public class Shoot3KillServer {
 					int i = 0;
 					for (; i < read; i++) {
 						if (rec_state._buffer[i] == (byte)'\0') {
-							rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
+							try {
+								rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
+							} catch (Exception e) {
+								IOut.Log ("enc_ascii_err_in_loop ("+start+","+i+") "+e.GetType());
+							}
 							msg_recieved(rec_state._msg.ToString());
 							rec_state._msg.Remove(0,rec_state._msg.Length);
 							start = i + 1;
@@ -109,7 +113,7 @@ public class Shoot3KillServer {
 					try {
 						rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,read-start));
 					} catch (Exception e) {
-						IOut.Log ("enc_ascii_err ("+start+","+read+") "+e.GetType());
+						IOut.Log ("enc_ascii_err_after_loop ("+start+","+read+") "+e.GetType());
 					}
 					rec_handler.BeginReceive(rec_state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,rec_state);	
 					
