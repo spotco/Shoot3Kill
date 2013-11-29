@@ -213,7 +213,11 @@ public class Shoot3KillServer {
 			string next_client_msg_str = null;
 			lock (_connection_id_to_msg) {
 				if (_connection_id_to_msg.Keys.Count > 0) {
-					int target_id = _connection_id_to_msg.Keys.GetEnumerator().Current;
+					int target_id = -1;
+					foreach(int i in _connection_id_to_msg.Keys) {
+						target_id = i;
+						break;
+					}
 					next_client_msg_str = _connection_id_to_msg[target_id];
 					_connection_id_to_msg.Remove(target_id);
 					queue_empty = false;
