@@ -87,12 +87,12 @@ public class Shoot3KillServer {
 		AsyncReadState state = new AsyncReadState();
 		state._socket = handler;
 
-		int sr_ct = 0;
+		bool send_ok = true;
 		int connection_id = _connection_id_alloc++;
 
 		AsyncCallback receive_callback = null;
 		receive_callback = new AsyncCallback((IAsyncResult rec_res) => {
-			sr_ct--;
+			send_ok = true;
 
 			AsyncReadState rec_state = (AsyncReadState) rec_res.AsyncState;
 			Socket rec_handler = rec_state._socket;
@@ -107,8 +107,10 @@ public class Shoot3KillServer {
 							try {
 								rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
 							} catch (Exception e) {}
-
-							msg_recieved(rec_state._msg.ToString(),connection_id);
+							string stv = rec_state._msg.ToString();
+							if (stv.Trim() != "") {
+								msg_recieved(stv,connection_id);
+							}
 							rec_state._msg.Remove(0,rec_state._msg.Length);
 							start = i + 1;
 						}
@@ -136,26 +138,27 @@ public class Shoot3KillServer {
 		handler.BeginReceive(state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,state);
 
 		Thread send_thread = new Thread(new ThreadStart(()=>{
-			while (true) {
-				Thread.Sleep(40);
-				if (sr_ct > 10) continue;
+			try {
+				while (true) {
+					if (!handler.Connected) break;
+					Thread.Sleep(40);
+					if (!send_ok) continue;
+					send_ok = false;
 
-				if (!handler.Connected) {
-					break;
+					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+Shoot3KillServer.MSG_TERMINATOR);
+
+					state._socket.BeginSend(msg_bytes,0,msg_bytes.Length,0,new AsyncCallback((IAsyncResult send_res) => {
+
+
+						Socket send_listener = (Socket) send_res.AsyncState;
+						try {
+							send_listener.EndSend(send_res);
+						} catch (Exception e) {
+							send_listener.Close();
+						}
+					}),state._socket);
 				}
-				byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+Shoot3KillServer.MSG_TERMINATOR);
-
-				state._socket.BeginSend(msg_bytes,0,msg_bytes.Length,0,new AsyncCallback((IAsyncResult send_res) => {
-					sr_ct++;
-
-					Socket send_listener = (Socket) send_res.AsyncState;
-					try {
-						send_listener.EndSend(send_res);
-					} catch (Exception e) {
-						send_listener.Close();
-					}
-				}),state._socket);
-			}
+			} catch (Exception e) {}
 		}));
 		send_thread.Start();
 	}
@@ -231,7 +234,6 @@ public class Shoot3KillServer {
 			} catch (Exception e) {
 				IOut.Log ("---[BAD JSON]---");
 				IOut.Log (next_client_msg_str);
-				IOut.Log (next_client_msg_str.Trim() == "");
 				continue;
 			}
 

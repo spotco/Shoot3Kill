@@ -63,7 +63,7 @@ public class BulletManager : MonoBehaviour {
 			tar._vel.y = b._vel._y;
 			tar._vel.z = b._vel._z;
 
-			tar.__ct = 50;
+			tar.__ct = 25;
 			tar.update();
 		}
 	}

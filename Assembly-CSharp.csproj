@@ -69,7 +69,7 @@
      <Compile Include="Assets\net\PlayerInfo.cs" />
      <Compile Include="Assets\net\SPDefs.cs" />
      <Compile Include="Assets\net\SyncClient.cs" />
-     <Compile Include="Assets\net\server\CUtil.cs" />
+     <Compile Include="Assets\net\server\IUtil.cs" />
      <Compile Include="Assets\net\server\Shoot3KillServer.cs" />
      <Compile Include="Assets\net\server\SocketPolicyServer.cs" />
      <Compile Include="Assets\ui_scripts\ChatWindow.cs" />

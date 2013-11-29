@@ -59,7 +59,10 @@ public class PlayerControl : MonoBehaviour {
 		}
 
 		if ( (Input.GetMouseButton(0) || _hold_fire)  /*&& _bullet_cooldown <= 0 */) {
-			BulletManager.instance.add_bullet(_camera_transform.position,_camera_transform.forward);
+			Vector3 bullet_vel = _camera_transform.forward;
+			bullet_vel.Normalize();
+			bullet_vel = Util.vector_scale(bullet_vel,0.25f);
+			BulletManager.instance.add_bullet(_camera_transform.position,bullet_vel);
 			//EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
 		}
 		

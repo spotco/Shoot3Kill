@@ -18,7 +18,8 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
-	public static string SERVER = "54.245.123.189";
+	//public static string SERVER = "54.245.123.189";
+	public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);
@@ -33,7 +34,7 @@ public class SyncClient : MonoBehaviour {
 			_socket = (Socket) res.AsyncState;
 			_socket.EndConnect(res);
 
-			int sr_ct = 0;
+			bool send_ok = true;
 
 			_request_thread = new Thread(new ThreadStart(() => {
 				AsyncReadState state = new AsyncReadState();
@@ -59,14 +60,14 @@ public class SyncClient : MonoBehaviour {
 						break;
 					}
 
-					sr_ct--;
+					send_ok = true;
 				}
 			}));
 			_request_thread.Start();
 			
 			_send_thread = new Thread(new ThreadStart(() => {
 				while (true) {
-					if ((_socket == null || !_socket.Connected) || sr_ct > 10) {
+					if ((_socket == null || !_socket.Connected) || !send_ok) {
 						Thread.Sleep(40);
 						continue;
 						
@@ -86,28 +87,20 @@ public class SyncClient : MonoBehaviour {
 					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+'\0');
 					_socket.Send(msg_bytes);
 
-					sr_ct++;
+					send_ok = false;
 				}
 			}));
 			_send_thread.Start();
 		},socket);
-
-
-#if SOCKET_SYNC
-		socket.Connect(remoteEndPoint);
-		_socket = socket;
-		_request_thread = new Thread(new ThreadStart(request_thread));
-		_request_thread.Start();
-		
-		_send_thread = new Thread(new ThreadStart(send_thread));
-		_send_thread.Start();
-#endif
 	}
 
 	Queue<string> _msg_recieve_queue = new Queue<string>();
 	Queue<string> _msg_send_queue = new Queue<string>();
 
 	void msg_recieved(string msg_str) {
+		ChatWindow.TEST_LAST_UPDATE = (IUtil.time_since("msg_recieved")/10000) + "ms";
+		IUtil.time_start("msg_recieved");
+
 		lock (_msg_recieve_queue) {
 			if (_msg_recieve_queue.Count > 0) _msg_recieve_queue.Clear();
 			_msg_recieve_queue.Enqueue(msg_str);
