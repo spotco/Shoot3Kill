@@ -18,6 +18,7 @@ public class AsyncReadState {
 public class Shoot3KillServer {
 	
 	public static int PORT = 6999;
+	public static char MSG_TERMINATOR = '\0';
 
 	public static void Main(string[] args) {
 		SocketPolicyServer server = new SocketPolicyServer (SocketPolicyServer.AllPolicy);
@@ -74,6 +75,8 @@ public class Shoot3KillServer {
 		IOut.Log("stopped");
 	}
 
+	int _connection_id_alloc = 0;
+
 	public void accept_callback(IAsyncResult res) {
 		IOut.Log ("connection start");
 		Socket listener = (Socket) res.AsyncState;
@@ -85,6 +88,7 @@ public class Shoot3KillServer {
 		state._socket = handler;
 
 		int sr_ct = 0;
+		int connection_id = _connection_id_alloc++;
 
 		AsyncCallback receive_callback = null;
 		receive_callback = new AsyncCallback((IAsyncResult rec_res) => {
@@ -99,12 +103,12 @@ public class Shoot3KillServer {
 					int start = 0;
 					int i = 0;
 					for (; i < read; i++) {
-						if (rec_state._buffer[i] == (byte)'\0') {
+						if (rec_state._buffer[i] == (byte)Shoot3KillServer.MSG_TERMINATOR) {
 							try {
 								rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,i));
 							} catch (Exception e) {}
 
-							msg_recieved(rec_state._msg.ToString());
+							msg_recieved(rec_state._msg.ToString(),connection_id);
 							rec_state._msg.Remove(0,rec_state._msg.Length);
 							start = i + 1;
 						}
@@ -116,10 +120,6 @@ public class Shoot3KillServer {
 					rec_handler.BeginReceive(rec_state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,rec_state);	
 					
 				} else {
-					if (rec_state._msg.Length > 0) {
-						msg_recieved(rec_state._msg.ToString());
-					}
-					rec_state._msg.Remove(0,rec_state._msg.Length);
 					rec_handler.Close();
 					IOut.Log ("connection closed");
 				}
@@ -143,7 +143,7 @@ public class Shoot3KillServer {
 				if (!handler.Connected) {
 					break;
 				}
-				byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+'\0');
+				byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_send()+Shoot3KillServer.MSG_TERMINATOR);
 
 				state._socket.BeginSend(msg_bytes,0,msg_bytes.Length,0,new AsyncCallback((IAsyncResult send_res) => {
 					sr_ct++;
@@ -162,19 +162,18 @@ public class Shoot3KillServer {
 
 //----------------------------------------------
 
+	int _allocid = 0;
 	HashSet<int> _generated_ids_outstanding = new HashSet<int>();
 
 	List<SPEvent> _events = new List<SPEvent>();
 	Dictionary<int,SPPlayerObject> _id_to_players = new Dictionary<int, SPPlayerObject>();
 	Dictionary<string,SPBulletObject> _key_to_bullets = new Dictionary<string, SPBulletObject>();
 
-	Queue<string> _queued_client_msgs = new Queue<string>();
-	readonly object _queued_client_msgs_lock = new object();
-	int _allocid = 0;
+	Dictionary<int,string> _connection_id_to_msg = new Dictionary<int, string>();
 
-	public void msg_recieved(string msg) {
-		lock (_queued_client_msgs_lock) {
-			_queued_client_msgs.Enqueue(msg);
+	public void msg_recieved(string msg, int connection_id) {
+		lock (_connection_id_to_msg) {
+			_connection_id_to_msg[connection_id] = msg;
 		}
 	}
 
@@ -210,11 +209,15 @@ public class Shoot3KillServer {
 
 	private void update() {
 		while (true) {
-			bool queue_empty = false;
+			bool queue_empty = true;
 			string next_client_msg_str = null;
-			lock (_queued_client_msgs_lock) {
-				queue_empty = _queued_client_msgs.Count == 0;
-				if (!queue_empty) next_client_msg_str = _queued_client_msgs.Dequeue();
+			lock (_connection_id_to_msg) {
+				if (_connection_id_to_msg.Keys.Count > 0) {
+					int target_id = _connection_id_to_msg.Keys.GetEnumerator().Current;
+					next_client_msg_str = _connection_id_to_msg[target_id];
+					_connection_id_to_msg.Remove(target_id);
+					queue_empty = false;
+				}
 			}
 			if (queue_empty) break;
 
@@ -224,6 +227,7 @@ public class Shoot3KillServer {
 			} catch (Exception e) {
 				IOut.Log ("---[BAD JSON]---");
 				IOut.Log (next_client_msg_str);
+				IOut.Log (next_client_msg_str.Trim() == "");
 				continue;
 			}
 
