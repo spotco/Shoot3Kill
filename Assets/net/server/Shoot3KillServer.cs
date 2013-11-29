@@ -106,7 +106,11 @@ public class Shoot3KillServer {
 							start = i + 1;
 						}
 					}
-					rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,read-start));
+					try {
+						rec_state._msg.Append(Encoding.ASCII.GetString(rec_state._buffer,start,read-start));
+					} catch (Exception e) {
+						IOut.Log ("enc_ascii_err ("+start+","+read+") "+e.GetType());
+					}
 					rec_handler.BeginReceive(rec_state._buffer,0,AsyncReadState.BUFFER_SIZE,0,receive_callback,rec_state);	
 					
 				} else {
