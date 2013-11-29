@@ -29,12 +29,16 @@ public class PlayerControl : MonoBehaviour {
 		_camera_transform = Util.FindInHierarchy(gameObject,"Main Camera").transform;
 	}
 
+	public Vector3 _last_body_position;
+	public bool _has_last_position = false; 
+
 	bool _menu_up = false;
 	bool _hold_fire = false;
 	float _test_theta = 0;
 	
 	int _bullet_cooldown = 0;
 	void Update () {
+
 		if (Input.GetKeyDown(KeyCode.Escape)) _menu_up = !_menu_up;
 		if (Input.GetKeyDown(KeyCode.Tab)) _hold_fire = !_hold_fire;
 
@@ -133,6 +137,9 @@ public class PlayerControl : MonoBehaviour {
 		}
 
 		fps_turn();
+
+		_last_body_position = gameObject.transform.position;
+		_has_last_position = true;
 	}
 
 	Vector3 _xy_angle = Vector3.zero;

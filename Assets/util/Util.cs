@@ -23,6 +23,10 @@ public class Util{
 		return (float)Math.Abs(Math.Sqrt(Math.Pow(a.x-b.x,2)+Math.Pow(a.y-b.y,2)+Math.Pow(a.z-b.z,2)));
 	}
 
+	public static Vector3 vec_sub(Vector3 a, Vector3 b) {
+		return new Vector3(a.x-b.x,a.y-b.y,a.z-b.z);
+	}
+
 	public static Vector3 vec_cross(Vector3 v1,Vector3 a) {
 		float x1, y1, z1;
 		x1 = (v1.y*a.z) - (a.y*v1.z);

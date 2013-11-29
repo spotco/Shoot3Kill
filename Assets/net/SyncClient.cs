@@ -18,8 +18,8 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
-	//public static string SERVER = "54.245.123.189";
-	public static string SERVER = "127.0.0.1";
+	public static string SERVER = "54.245.123.189";
+	//public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);
@@ -106,10 +106,6 @@ public class SyncClient : MonoBehaviour {
 		ChatWindow.TEST_LAST_UPDATE = (IUtil.time_since("msg_recieved")/10000) + "ms";
 		IUtil.time_start("msg_recieved");
 
-		ChatWindow.TEST_LAST_UPDATE = IUtil.i1 + " , "+IUtil.i2;
-
-		Debug.Log (msg_str);
-
 		lock (_msg_recieve_queue) {
 			_msg_recieve_queue.Clear();
 			_msg_recieve_queue.Enqueue(msg_str);
@@ -128,14 +124,15 @@ public class SyncClient : MonoBehaviour {
 		_request_thread.Abort();
 		_socket.Close();
 	}
-	
-	Vector3 _last_body_position;
-	bool _has_last_position = false; 
+
+	PlayerControl _pcontrol = null;
+
 	void Update () {
 		if (_socket == null || !_socket.Connected) {
 			Debug.Log ("not connected");
 			return;
 		}
+		if (_pcontrol == null) _pcontrol = gameObject.GetComponent<PlayerControl>();
 
 		while(true) {
 			bool cont;
@@ -164,14 +161,14 @@ public class SyncClient : MonoBehaviour {
 		SPClientMessage msg_out = new SPClientMessage();
 		msg_out._player._pos = Util.vector3_to_spvector(gameObject.transform.position);
 		msg_out._player._rot = Util.vector3_to_spvector(gameObject.transform.eulerAngles);
-		if (!_has_last_position) {
+		if (!_pcontrol._has_last_position) {
 			msg_out._player._vel._x = 0;
 			msg_out._player._vel._y = 0;
 			msg_out._player._vel._z = 0;
 		} else {
-			msg_out._player._vel._x = gameObject.transform.position.x - _last_body_position.x;
-			msg_out._player._vel._y = gameObject.transform.position.y - _last_body_position.y;
-			msg_out._player._vel._z = gameObject.transform.position.z - _last_body_position.z;
+			msg_out._player._vel._x = gameObject.transform.position.x - _pcontrol._last_body_position.x;
+			msg_out._player._vel._y = gameObject.transform.position.y - _pcontrol._last_body_position.y;
+			msg_out._player._vel._z = gameObject.transform.position.z - _pcontrol._last_body_position.z;
 			
 		}
 		msg_out._player._id = PlayerInfo._id;
@@ -188,10 +185,6 @@ public class SyncClient : MonoBehaviour {
 		}
 		
 		send_message(msg_out);
-		
-		_last_body_position = gameObject.transform.position;
-		_has_last_position = true;
-
 	}
 
 }

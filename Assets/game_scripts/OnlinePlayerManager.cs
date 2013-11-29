@@ -79,6 +79,10 @@ class OnlinePlayer : MonoBehaviour {
 		_pos.y += _vel.y;
 		_pos.z += _vel.z;
 
+		_vel.x *= 0.99f;
+		_vel.z *= 0.99f;
+		if (_vel.y > 0) _vel.y -= 0.01f; 
+
 		gameObject.transform.position = _pos;
 		gameObject.transform.eulerAngles = _rot;
 	}
