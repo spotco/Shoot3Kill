@@ -99,6 +99,26 @@ public class Util{
 	public static float rad2deg = 57.29f;
 	public static float deg2rad = 0.017f;
 
+
+	static public bool collider_contains_pt ( Collider test, Vector3 point) {
+		Vector3    center;
+		Vector3    direction;
+		Ray        ray;
+		RaycastHit hitInfo;
+		bool       hit;
+		
+		// Use collider bounds to get the center of the collider. May be inaccurate
+		// for some colliders (i.e. MeshCollider with a 'plane' mesh)
+		center = test.bounds.center;
+		
+		// Cast a ray from point to center
+		direction = center - point;
+		ray = new Ray(point, direction);
+		hit = test.Raycast(ray, out hitInfo, direction.magnitude);
+		
+		// If we hit the collider, point is outside. So we return !hit
+		return !hit;
+	}
 }
 
 

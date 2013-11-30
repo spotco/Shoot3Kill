@@ -18,8 +18,8 @@ public class SyncClient : MonoBehaviour {
 
 	bool _id_alloced = false;
 
-	public static string SERVER = "54.245.123.189";
-	//public static string SERVER = "127.0.0.1";
+	//public static string SERVER = "54.245.123.189";
+	public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		Security.PrefetchSocketPolicy(SERVER,SocketPolicyServer.PORT,2000);

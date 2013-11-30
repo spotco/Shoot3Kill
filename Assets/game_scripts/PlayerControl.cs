@@ -62,12 +62,15 @@ public class PlayerControl : MonoBehaviour {
 			_body.velocity = new Vector3(Mathf.Cos (_test_theta),0,Mathf.Sin(_test_theta));
 		}
 
-		if ( (Input.GetMouseButton(0) /*|| _hold_fire*/)  /*&& _bullet_cooldown <= 0 */) {
+		_bullet_cooldown--;
+		if ( Input.GetMouseButton(0)  && _bullet_cooldown <= 0 ) {
 			Vector3 bullet_vel = _camera_transform.forward;
 			bullet_vel.Normalize();
 			bullet_vel = Util.vector_scale(bullet_vel,0.25f);
 			BulletManager.instance.add_bullet(_camera_transform.position,bullet_vel);
-			//EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
+
+			_bullet_cooldown = 4;
+			EffectManager.instance.add_effect((new Effect("Sparks",Util.vector_add(_camera_transform.position,_camera_transform.forward),20)).set_rotation(gameObject.transform.eulerAngles));
 		}
 		
 		if (Input.mousePosition.x > Screen.width || Input.mousePosition.y > Screen.height) return;
@@ -75,7 +78,7 @@ public class PlayerControl : MonoBehaviour {
 		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;
-			Vector3 jump_dir = new Vector3(0,1,0);
+			Vector3 jump_dir = _ground_normal;
 			jump_dir.Normalize();
 			jump_dir.Scale(new Vector3(JUMP_FORCE,JUMP_FORCE,JUMP_FORCE));
 			_body.AddForce(jump_dir);
@@ -172,25 +175,9 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision col) {
-		
 		ContactPoint contact = col.contacts[0];
 		_ground_normal = contact.normal;
 		Vector3 vel = _body.velocity;
-		if (Math.Abs(_ground_normal.x) > Math.Abs(_ground_normal.y) && Math.Abs(_ground_normal.x) > Math.Abs(_ground_normal.z)) {
-			_ground_normal.y = 0;
-			_ground_normal.z = 0;
-			vel.x = 0;
-		}
-		if (Math.Abs(_ground_normal.y) > Math.Abs(_ground_normal.x) && Math.Abs(_ground_normal.y) > Math.Abs(_ground_normal.z)) {
-			_ground_normal.x = 0;
-			_ground_normal.z = 0;
-			vel.y = 0;
-		}
-		if (Math.Abs(_ground_normal.z) > Math.Abs(_ground_normal.y) && Math.Abs(_ground_normal.z) > Math.Abs(_ground_normal.x)) {
-			_ground_normal.x = 0;
-			_ground_normal.y = 0;
-			vel.z = 0;
-		}
 		_body.velocity = vel;
 		_ground_normal.Normalize();
 		_collisionct++;
@@ -200,4 +187,20 @@ public class PlayerControl : MonoBehaviour {
 		_ground_normal = new Vector3(0,1,0);
 		_collisionct--;
 	}
+
+	void OnTriggerEnter(Collider col) {
+		Bullet b = col.gameObject.GetComponent<Bullet>();
+		if (b != null && b._playerid != PlayerInfo._id) {
+			hit_by_bullet(b);
+		}
+	}
+
+	void hit_by_bullet(Bullet b) {
+		PlayerInfo._hp--;
+		if (PlayerInfo._hp <= 0) {
+			PlayerInfo._alive = false;
+			PlayerInfo._respawn_ct = 400;
+		}
+	}
+
 }
