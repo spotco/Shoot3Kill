@@ -1,101 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.20506</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1F2EADAC-8620-657E-24DD-2F1B66332413}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <BaseDirectory>Assets</BaseDirectory>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{1F2EADAC-8620-657E-24DD-2F1B66332413}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_OSX;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_GENERICS;ENABLE_SUBSTANCE;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_GAMECENTER;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_3_0;UNITY_4_3;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_OSX</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>0169</NoWarn>
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_WEBPLAYER;WEBPLUG;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_GENERICS;ENABLE_SUBSTANCE;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_3_0;UNITY_4_3;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_OSX</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>Temp\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>0169</NoWarn>
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Applications\Unity\Unity.app\Contents\Frameworks\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor">
-      <HintPath>..\..\..\Applications\Unity\Unity.app\Contents\Frameworks\Managed\UnityEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEditor.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\OVR\OVRImageEffects\OVRImageEffectBase.cs" />
-    <Compile Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRCamera.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRCameraController.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRComponent.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRCrosshair.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRDevice.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRGUI.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRGamepadController.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRMagCalibration.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRMainMenu.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRMessenger.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRPlayerController.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRPresetManager.cs" />
-    <Compile Include="Assets\OVR\Scripts\OVRUtils.cs" />
-    <Compile Include="Assets\SimpleParticlePack\Scripts\ParticleTester.cs" />
-    <Compile Include="Assets\game_scripts\Bullet.cs" />
-    <Compile Include="Assets\game_scripts\BulletManager.cs" />
-    <Compile Include="Assets\game_scripts\EffectManager.cs" />
-    <Compile Include="Assets\game_scripts\OnlinePlayerManager.cs" />
-    <Compile Include="Assets\game_scripts\PlayerControl.cs" />
-    <Compile Include="Assets\net\PlayerInfo.cs" />
-    <Compile Include="Assets\net\SPDefs.cs" />
-    <Compile Include="Assets\net\SyncClient.cs" />
-    <Compile Include="Assets\net\server\IUtil.cs" />
-    <Compile Include="Assets\net\server\Shoot3KillServer.cs" />
-    <Compile Include="Assets\net\server\SocketPolicyServer.cs" />
-    <Compile Include="Assets\ui_scripts\ChatWindow.cs" />
-    <Compile Include="Assets\util\IOut.cs" />
-    <Compile Include="Assets\util\JSONObject.cs" />
-    <Compile Include="Assets\util\Util.cs" />
-    <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
-    <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
-    <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-BasicOutline.shader" />
-    <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_CA.shader" />
-    <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-LightedOutline.shader" />
-    <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
-    <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.shader" />
-    <None Include="Assets\OVR\Shaders\OVRGUIShader.shader" />
-    <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend %28Queue +100%29.shader" />
-    <Compile Include="Assets\game_scripts\PlayerMovementManager.cs" />
+     <Compile Include="Assets\OVR\OVRImageEffects\OVRImageEffectBase.cs" />
+     <Compile Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRCamera.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRCameraController.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRComponent.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRCrosshair.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRDevice.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRGUI.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRGamepadController.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRMagCalibration.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRMainMenu.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRMessenger.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRPlayerController.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRPresetManager.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRUtils.cs" />
+     <Compile Include="Assets\SimpleParticlePack\Scripts\ParticleTester.cs" />
+     <Compile Include="Assets\game_scripts\bullet\Bullet.cs" />
+     <Compile Include="Assets\game_scripts\bullet\BulletManager.cs" />
+     <Compile Include="Assets\game_scripts\effect\EffectManager.cs" />
+     <Compile Include="Assets\game_scripts\game\S3KCamera.cs" />
+     <Compile Include="Assets\game_scripts\game\S3KControl.cs" />
+     <Compile Include="Assets\game_scripts\game\S3KGUI.cs" />
+     <Compile Include="Assets\game_scripts\game\S3KGameState.cs" />
+     <Compile Include="Assets\game_scripts\net\PlayerInfo.cs" />
+     <Compile Include="Assets\game_scripts\net\S3KOnlineClient.cs" />
+     <Compile Include="Assets\game_scripts\net\SPDefs.cs" />
+     <Compile Include="Assets\game_scripts\net\server\IUtil.cs" />
+     <Compile Include="Assets\game_scripts\net\server\Shoot3KillServer.cs" />
+     <Compile Include="Assets\game_scripts\net\server\SocketPolicyServer.cs" />
+     <Compile Include="Assets\game_scripts\online_player\OnlinePlayer.cs" />
+     <Compile Include="Assets\game_scripts\online_player\OnlinePlayerManager.cs" />
+     <Compile Include="Assets\game_scripts\util\IOut.cs" />
+     <Compile Include="Assets\game_scripts\util\JSONObject.cs" />
+     <Compile Include="Assets\game_scripts\util\ObjTag.cs" />
+     <Compile Include="Assets\game_scripts\util\Util.cs" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
+     <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-BasicOutline.shader" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_CA.shader" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-LightedOutline.shader" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.shader" />
+     <None Include="Assets\OVR\Shaders\OVRGUIShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{3291C7EE-A06C-B446-AB40-879C0283958E}</Project>
-      <Name>Assembly-CSharp-firstpass</Name>
-    </ProjectReference>
+      <Project>{3291C7EE-A06C-B446-AB40-879C0283958E}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
-      <Project>{2E0661B9-B2B3-1A44-105D-8A873DA27483}</Project>
-      <Name>Assembly-UnityScript-firstpass</Name>
-    </ProjectReference>
+      <Project>{2E0661B9-B2B3-1A44-105D-8A873DA27483}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -105,4 +105,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  
 </Project>
