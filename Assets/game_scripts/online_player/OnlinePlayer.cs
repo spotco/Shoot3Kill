@@ -37,7 +37,8 @@ public class OnlinePlayer : MonoBehaviour {
 			gameObject.SetActive(false);
 		}
 
-		_name_plate.text = obj._name;
+		if (obj._name == null) obj._name = "Anonymous";
+		if (_name_plate != null) _name_plate.text = obj._name;
 	}
 	
 	void Update() {

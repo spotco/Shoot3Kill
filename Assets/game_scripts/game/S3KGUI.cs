@@ -74,11 +74,13 @@ public class S3KGUI : MonoBehaviour {
 
 		if (!PlayerInfo._logged_in) return;
 
+#if !UNITY_WEBPLAYER
 		GUI.Label(
 			new Rect(Screen.width-CHATWIN_WID, Screen.height-CHATWIN_HEI, CHATWIN_WID, CHATWIN_HEI), 
 			_chat_display,
 			GUI.skin.textArea
 		);
+#endif
 
 		if (Event.current.type == EventType.KeyDown) {
 			if (!_in_type_mode && Event.current.keyCode == KeyCode.Return) {

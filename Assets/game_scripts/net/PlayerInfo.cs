@@ -22,6 +22,8 @@ public class PlayerInfo {
  * 		-push bullet only once client, into all other clients on server
  * unified copy-values-to-spobjects code
  * 
+ * socket chat server too
+ * 
  * better motion prediction:
  * 		more lastframe polls on client side
  * 		smooth interpolation to msg recieved point client side
