@@ -14,12 +14,22 @@ public class S3KGameState : MonoBehaviour {
 	}
 	void Update(){
 		if (!PlayerInfo._logged_in) return;
-		
+
+		if (PlayerInfo._alive && gameObject.transform.position.y < -25) {
+			PlayerInfo._hp = 0;
+			PlayerInfo._alive = false;
+			PlayerInfo._respawn_ct = 125;
+		}
+
 		if (!PlayerInfo._alive) {
 			S3KCamera.inst.set_active_zoomed();
 			PlayerInfo._respawn_ct--;
+
+			S3KGUI.inst._status = "respawn in "+PlayerInfo._respawn_ct; 
+
 			if (PlayerInfo._respawn_ct <= 0) {
 				PlayerInfo._alive = true;
+				PlayerInfo._hp = 1;
 				List<GameObject> respawn_points = ObjTag._tagged_objs["Respawn"];
 				gameObject.transform.position = respawn_points[Util.rand.Next(respawn_points.Count)].transform.position;
 

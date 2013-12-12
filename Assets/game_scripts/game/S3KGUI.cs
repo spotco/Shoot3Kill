@@ -47,6 +47,7 @@ public class S3KGUI : MonoBehaviour {
 		});
 		_webclient.UploadValuesCompleted += new UploadValuesCompletedEventHandler((System.Object sender, UploadValuesCompletedEventArgs e) => {
 			if (!e.Cancelled && e.Error == null) {
+				update_chat();
 				Debug.Log (ASCIIEncoding.ASCII.GetString(e.Result));
 			}
 		});
@@ -60,7 +61,7 @@ public class S3KGUI : MonoBehaviour {
 	public bool _in_type_mode = false;
 
 	void OnGUI() {
-		GUI.skin.label.normal.textColor = Color.white;
+		GUI.skin.label.normal.textColor = Color.black;
 		GUI.Label(
 			new Rect(0, 0, 100, 20), 
 			_latency+"ms"
@@ -115,13 +116,13 @@ public class S3KGUI : MonoBehaviour {
 	int _ct;
 	void Update() {
 		_ct++;
-		if (_ct % 200 == 0 && !_webclient.IsBusy) {
+		if (_ct % 200 == 0) {
 			update_chat();
 		}
 	}
 
 	void update_chat() {
-		_webclient.DownloadStringAsync(URI);
+		if (!_webclient.IsBusy) _webclient.DownloadStringAsync(URI);
 	}
 
 	void send_chat_message(string msg) {

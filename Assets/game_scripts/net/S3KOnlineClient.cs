@@ -134,7 +134,7 @@ public class S3KOnlineClient : MonoBehaviour {
 			S3KGUI.inst._status = "not logged in!";
 		} else if (!_id_alloced) {
 			S3KGUI.inst._status = "allocating id...";
-		} else {
+		} else if (PlayerInfo._alive) {
 			S3KGUI.inst._status = "logged in as: "+PlayerInfo._name;
 		}
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class S3KControl : MonoBehaviour {
@@ -41,6 +42,7 @@ public class S3KControl : MonoBehaviour {
 
 		if (PlayerInfo._alive) {
 			_character_model.SetActive(true);
+
 			if (Input.GetKey(KeyCode.R)) {
 				gameObject.transform.position = Vector3.zero;
 				_body.velocity = Vector3.zero;
@@ -90,21 +92,25 @@ public class S3KControl : MonoBehaviour {
 
 	public int _jump_cooldown;
 	public int _move_cooldown;
-	public Vector3 _ground_normal;
+	int _jump_count = 0;
 
 	void jump() {
-		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
+		if (_jump_count > 0 && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;
-			//Vector3 jump_dir = _ground_normal;
 			Vector3 jump_dir = new Vector3(0,1f,0);
 			jump_dir.Normalize();
 			jump_dir.Scale(new Vector3(JUMP_FORCE,JUMP_FORCE,JUMP_FORCE));
 			_body.AddForce(jump_dir);
+			_jump_count--;
 		}
 		
 		if (_jump_cooldown > 0) _jump_cooldown--;
 		if (_move_cooldown > 0) _move_cooldown--;
+
+		if (on_ground()) {
+			_jump_count = 1;
+		}
 	}
 
 	void move() {
@@ -174,24 +180,30 @@ public class S3KControl : MonoBehaviour {
 		
 		gameObject.transform.rotation = Quaternion.Euler(_xy_angle);
 	}
-	
-	public int _collisionct = 0;
-	
+
+	Dictionary<int,Vector3> _instanceid_to_collision_normal = new Dictionary<int, Vector3>();
+
 	public bool on_ground() {
-		return _collisionct > 0;
+		Vector3 up = new Vector3(0,1,0);
+		foreach(int instanceid in _instanceid_to_collision_normal.Keys) {
+			Vector3 collision_n = _instanceid_to_collision_normal[instanceid];
+			float dot = up.x * collision_n.x + up.y * collision_n.y + up.z * collision_n.z;
+			dot /= (up.magnitude * collision_n.magnitude);
+			float angle_r = Mathf.Acos(dot);
+			if (angle_r < 0.7) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	void OnCollisionEnter(Collision col) {
 		ContactPoint contact = col.contacts[0];
-		_ground_normal = contact.normal;
-		Vector3 vel = _body.velocity;
-		_body.velocity = vel;
-		_ground_normal.Normalize();
-		_collisionct++;
+		_instanceid_to_collision_normal[col.collider.GetInstanceID()] = contact.normal;
 	}
 	
 	void OnCollisionExit(Collision col) {
-		_ground_normal = new Vector3(0,1,0);
-		_collisionct--;
+		if (_instanceid_to_collision_normal.ContainsKey(col.collider.GetInstanceID()))
+			_instanceid_to_collision_normal.Remove(col.collider.GetInstanceID());
 	}
 }
