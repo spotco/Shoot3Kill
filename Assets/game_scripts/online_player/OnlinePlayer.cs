@@ -6,6 +6,12 @@ public class OnlinePlayer : MonoBehaviour {
 	Vector3 _vel;
 	Vector3 _rot;
 	int _ct;
+
+	TextMesh _name_plate;
+
+	void Start() {
+		_name_plate = Util.FindInHierarchy(gameObject,"NameText").GetComponent<TextMesh>();
+	}
 	
 	public void init() {
 		_ct = 200;
@@ -30,6 +36,8 @@ public class OnlinePlayer : MonoBehaviour {
 		} else {
 			gameObject.SetActive(false);
 		}
+
+		_name_plate.text = obj._name;
 	}
 	
 	void Update() {

@@ -268,6 +268,7 @@ public class Shoot3KillServer {
 				tar_obj._rot = next_client_msg._player._rot;
 				tar_obj._vel = next_client_msg._player._vel;
 				tar_obj._alive = next_client_msg._player._alive;
+				tar_obj._name = next_client_msg._player._name;
 				tar_obj.__timeout = 10;
 
 				foreach(SPBulletObject b in next_client_msg._bullets) {

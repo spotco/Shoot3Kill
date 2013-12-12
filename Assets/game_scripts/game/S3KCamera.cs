@@ -24,10 +24,12 @@ public class S3KCamera : MonoBehaviour {
 	}
 
 	void Update () {
+#if !UNITY_WEBPLAYER
 		if (Input.GetKeyDown(KeyCode.P)) {
 			_OVR_mode = !_OVR_mode;
 			set_main_or_vr();
 		}
+#endif
 	}
 
 	void set_main_or_vr() {

@@ -26,6 +26,8 @@ public class S3KControl : MonoBehaviour {
 	bool _mouse_centered = true;
 
 	void Update () {
+		if (!PlayerInfo._logged_in) return;
+
 		if (Input.GetKeyDown(KeyCode.Escape)) _mouse_centered = !_mouse_centered;
 		if (_mouse_centered) {
 			Screen.showCursor = false;
@@ -92,7 +94,8 @@ public class S3KControl : MonoBehaviour {
 		if (on_ground() && _jump_cooldown == 0 && Input.GetKey(KeyCode.Space)) {
 			_jump_cooldown = 20;
 			_move_cooldown = 20;
-			Vector3 jump_dir = _ground_normal;
+			//Vector3 jump_dir = _ground_normal;
+			Vector3 jump_dir = new Vector3(0,1f,0);
 			jump_dir.Normalize();
 			jump_dir.Scale(new Vector3(JUMP_FORCE,JUMP_FORCE,JUMP_FORCE));
 			_body.AddForce(jump_dir);

@@ -13,6 +13,8 @@ public class S3KGameState : MonoBehaviour {
 		PlayerInfo._hp = 1;
 	}
 	void Update(){
+		if (!PlayerInfo._logged_in) return;
+		
 		if (!PlayerInfo._alive) {
 			S3KCamera.inst.set_active_zoomed();
 			PlayerInfo._respawn_ct--;

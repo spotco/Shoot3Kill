@@ -20,8 +20,8 @@ public class S3KOnlineClient : MonoBehaviour {
 	Thread _send_thread;
 	Socket _socket;
 
-	public static string SERVER = "54.245.123.189";
-	//public static string SERVER = "127.0.0.1";
+	//public static string SERVER = "54.245.123.189";
+	public static string SERVER = "127.0.0.1";
 
 	void Start () {
 		inst = this;
@@ -107,6 +107,7 @@ public class S3KOnlineClient : MonoBehaviour {
 	
 	void msg_recieved(string msg_str) {
 		S3KGUI.inst._latency = (int)(IUtil.time_since("msg_recieved")/10000);
+		IUtil.time_start("msg_recieved");
 
 		lock (_msg_recieve_queue) {
 			_msg_recieve_queue.Clear();
@@ -129,8 +130,13 @@ public class S3KOnlineClient : MonoBehaviour {
 
 	void Update () {
 		if (_socket == null || !_socket.Connected) {
-			Debug.Log ("not connected");
+			S3KGUI.inst._status = "not connected!";
 			return;
+		}
+		if (!PlayerInfo._logged_in) {
+			S3KGUI.inst._status = "not logged in!";
+		} else {
+			S3KGUI.inst._status = "logged in as: "+PlayerInfo._name;
 		}
 
 		while(true) {
@@ -174,6 +180,7 @@ public class S3KOnlineClient : MonoBehaviour {
 
 		msg_out._player._alive = PlayerInfo._alive ? 1 : 0;
 		msg_out._player._id = PlayerInfo._id;
+		msg_out._player._name = PlayerInfo._name;
 
 
 		foreach (Bullet b in BulletManager.inst._bullets) {
