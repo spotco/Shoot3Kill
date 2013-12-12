@@ -16,13 +16,13 @@ public class PlayerInfo {
 
 /**
  * TODO --
+ * refactor networking code:
+ * 		-unified send-ack based event system per user
+ * 		-object to represent user connection on server
+ * 		-push bullet only once client, into all other clients on server
+ * unified copy-values-to-spobjects code
+ * 
  * better motion prediction:
  * 		more lastframe polls on client side
  * 		smooth interpolation to msg recieved point client side
- * scoreboard
- * chat board
- * hud gui with latency and kills/deaths
- * thread for spbullet timeout on server
- * particle effects for player death, bullet hit
- * unified copy-values-to-spobjects code
  **/

@@ -25,7 +25,7 @@ public class S3KCamera : MonoBehaviour {
 
 	void Update () {
 #if !UNITY_WEBPLAYER
-		if (Input.GetKeyDown(KeyCode.P)) {
+		if (Input.GetKeyDown(KeyCode.P) && PlayerInfo._logged_in && !S3KGUI.inst._in_type_mode) {
 			_OVR_mode = !_OVR_mode;
 			set_main_or_vr();
 		}

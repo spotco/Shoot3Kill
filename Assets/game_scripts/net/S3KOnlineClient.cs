@@ -18,7 +18,7 @@ public class S3KOnlineClient : MonoBehaviour {
 
 	Thread _request_thread;
 	Thread _send_thread;
-	Socket _socket;
+	public Socket _socket;
 
 	//public static string SERVER = "54.245.123.189";
 	public static string SERVER = "127.0.0.1";
@@ -51,8 +51,6 @@ public class S3KOnlineClient : MonoBehaviour {
 						for (; i < read; i++) {
 							if (state._buffer[i] == (byte)Shoot3KillServer.MSG_TERMINATOR) {
 								state._msg.Append(Encoding.ASCII.GetString(state._buffer,start,i));
-
-								IUtil.i2 = state._msg.Length;
 
 								msg_recieved(state._msg.ToString());
 								state._msg.Remove(0,state._msg.Length);
@@ -90,8 +88,6 @@ public class S3KOnlineClient : MonoBehaviour {
 					}
 					
 					byte[] msg_bytes = Encoding.ASCII.GetBytes(msg_text+Shoot3KillServer.MSG_TERMINATOR);
-
-					IUtil.i1 = msg_bytes.Length;
 
 					_socket.Send(msg_bytes);
 
@@ -133,8 +129,11 @@ public class S3KOnlineClient : MonoBehaviour {
 			S3KGUI.inst._status = "not connected!";
 			return;
 		}
+
 		if (!PlayerInfo._logged_in) {
 			S3KGUI.inst._status = "not logged in!";
+		} else if (!_id_alloced) {
+			S3KGUI.inst._status = "allocating id...";
 		} else {
 			S3KGUI.inst._status = "logged in as: "+PlayerInfo._name;
 		}
@@ -162,6 +161,7 @@ public class S3KOnlineClient : MonoBehaviour {
 			OnlinePlayerManager.inst.msg_recieved(msg);
 			BulletManager.inst.msg_recieved(msg);
 		}
+
 
 		SPClientMessage msg_out = new SPClientMessage();
 

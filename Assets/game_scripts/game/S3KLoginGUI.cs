@@ -35,17 +35,19 @@ public class S3KLoginGUI : MonoBehaviour {
 				_input_text
 			);
 
-			if (GUI.Button(new Rect(
-					Screen.width*0.675f,
-					Screen.height*0.75f - 40*0.5f,
-					40,
-					40
-				),"Play!")) {
+			if (S3KOnlineClient.inst._socket != null && S3KOnlineClient.inst._socket.Connected) {
+				if (GUI.Button(new Rect(
+						Screen.width*0.675f,
+						Screen.height*0.75f - 40*0.5f,
+						40,
+						40
+					),"Play!")) {
 
-				if (_input_text.Length == 0) _input_text = "Anonymous";
-				if (_input_text.Length > 16) _input_text = _input_text.Substring(0,16);
-				_pressed_logged_in = true;
+					if (_input_text.Length == 0) _input_text = "Anonymous";
+					if (_input_text.Length > 16) _input_text = _input_text.Substring(0,16);
+					_pressed_logged_in = true;
 
+				}
 			}
 		}
 	}

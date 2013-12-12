@@ -27,6 +27,8 @@ public class S3KControl : MonoBehaviour {
 
 	void Update () {
 		if (!PlayerInfo._logged_in) return;
+		if (!S3KOnlineClient.inst._id_alloced) return;
+		if (S3KGUI.inst._in_type_mode) return;
 
 		if (Input.GetKeyDown(KeyCode.Escape)) _mouse_centered = !_mouse_centered;
 		if (_mouse_centered) {
