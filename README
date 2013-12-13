@@ -1,0 +1,14 @@
+Shiny Yang CSE 467
+
+playable online at
+spotcos.com/shoot3kill/shoot3kill.html
+
+1) I wanted to build the simplest possible online first person shooter (think quake 1) with occulus rift integration. It had to be at least fairly performant, handle at the very least 8 or so people playing simultaneously. Gameplay wise, wanted a fast-paced gameplay with lots of jumping, running and dodging. Wanted the speed of something like "serious sam", with level design like unreal tournament.
+
+2) The current product fits most of the goals. It's pretty fun, and I've been able to play withquite a few people at the same time. Will be working on this more later, however. Will add new features, but much of it will take a major rework of the current networking system. (The general gist is to add multiple tiers of message transfer, one reliable and the other one not (realtime))
+
+3) There's a server (/Assets/game_scripts/net/server), build with make.sh and run with mono. The server is both the unity-required socket policy server, and the game server. There is a client, which can be built from opening /Assets/GameScene1.unity in Unity. The client and server communicate through tcp sockets, using json strings. They share json encoding and decoding code (see Assets/net/SPDefs.cs. The communication works as a kind of "ack-chain". The client will send the initial message with its position and the position of all its bullets, the server will send in response the world state, and repeat. They both don't resend until they get the response from the other end.
+
+4) A few interesting design decisions:
+The big win of doing the server in C# (the language of Unity) is that the client and server can shared a codebase. I use this mainly in the json message encoding/decoding, to maintain a standardized format. In addition, the use of json is questionable. It's not the most efficient (bit-wise), but makes development much easier (compared to rolling my own byte format). 
+In addition, there is no game logic on the server. The game is entirely client-authorative (though a client is only authorative on itself). This brings up the possibility of cheating/hacking, though I'm not too worried about that.
