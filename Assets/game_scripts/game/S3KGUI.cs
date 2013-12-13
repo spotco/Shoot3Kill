@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Net;
 using System;
 using System.Text;
@@ -21,15 +22,30 @@ public class S3KGUI : MonoBehaviour {
 	WebClient _webclient = new WebClient();
 	WebClient _sendwebclient = new WebClient();
 
+	List<TextMesh> _gui_lines = new List<TextMesh>();
+	TextMesh _input_line, _ms_display, _status_display;
+	JSONArray _posts;
+
 	void Start () {
 		inst = this;
+
+		_input_line = Util.FindInHierarchy(gameObject,"InputLine").GetComponent<TextMesh>();
+		_ms_display = Util.FindInHierarchy(gameObject,"MSDisplay").GetComponent<TextMesh>();
+		_status_display = Util.FindInHierarchy(gameObject,"StatusDisplay").GetComponent<TextMesh>();
+		for (int i = 1; i < 9; i++) {
+			TextMesh cur = Util.FindInHierarchy(gameObject,"Line"+i).GetComponent<TextMesh>();
+			_gui_lines.Add(cur);
+		}
+
 		_webclient.DownloadStringCompleted += new DownloadStringCompletedEventHandler((System.Object sender, DownloadStringCompletedEventArgs e) => {
 			if (!e.Cancelled && e.Error == null) {
 				_chat_display = "";
 				string str = (string)e.Result;
 				JSONObject jso = JSONObject.Parse(str);
 				JSONArray posts = jso.GetArray("posts");
+				_posts = posts;
 				int ct = 0;
+
 				for (int i = posts.Length-1; i >= 0 && ct < 8; i--,ct++) {
 					JSONObject post = posts[i].Obj;
 					string msg = post.GetString("message");
@@ -40,9 +56,7 @@ public class S3KGUI : MonoBehaviour {
 					string name = post.GetString("name");
 					if (name.Length == 0) name = "Anonymous";
 					_chat_display+=(name+":"+msg+"\n");
-					
 				}
-				
 			}
 		});
 		_webclient.UploadValuesCompleted += new UploadValuesCompletedEventHandler((System.Object sender, UploadValuesCompletedEventArgs e) => {
@@ -75,11 +89,13 @@ public class S3KGUI : MonoBehaviour {
 		if (!PlayerInfo._logged_in) return;
 
 #if !UNITY_WEBPLAYER
-		GUI.Label(
-			new Rect(Screen.width-CHATWIN_WID, Screen.height-CHATWIN_HEI, CHATWIN_WID, CHATWIN_HEI), 
-			_chat_display,
-			GUI.skin.textArea
-		);
+		if (!S3KCamera.inst._OVR_mode) {
+			GUI.Label(
+				new Rect(Screen.width-CHATWIN_WID, Screen.height-CHATWIN_HEI, CHATWIN_WID, CHATWIN_HEI), 
+				_chat_display,
+				GUI.skin.textArea
+			);
+		}
 #endif
 
 		if (Event.current.type == EventType.KeyDown) {
@@ -106,7 +122,7 @@ public class S3KGUI : MonoBehaviour {
 
 		}
 
-		if (_in_type_mode) {
+		if (_in_type_mode && !S3KCamera.inst._OVR_mode) {
 			GUI.Label(
 				new Rect(Screen.width-CHATWIN_WID,Screen.height-CHATWIN_HEI-20,CHATWIN_WID,20),
 				"Say:"+_chat_entry_buffer,
@@ -120,6 +136,31 @@ public class S3KGUI : MonoBehaviour {
 		_ct++;
 		if (_ct % 200 == 0) {
 			update_chat();
+		}
+
+		if (_posts != null) {
+			int ct = 0;
+			for (int i = _posts.Length-1; i >= 0 && ct < _gui_lines.Count; i--,ct++) {
+				JSONObject post = _posts[i].Obj;
+				string msg = post.GetString("message");
+				Regex r = new Regex("\n");
+				msg = Regex.Unescape(msg);
+				msg = r.Replace(msg,"");
+				string name = post.GetString("name");
+				if (name.Length == 0) name = "Anonymous";
+				
+				_gui_lines[ct].text = name+": "+msg;
+			}
+			_posts = null;
+		}
+		_ms_display.text = _latency + "ms";
+		_status_display.text = _status;
+
+	
+		if (_in_type_mode) {
+			_input_line.text = "Say: "+_chat_entry_buffer;
+		} else {
+			_input_line.text = "";
 		}
 	}
 
